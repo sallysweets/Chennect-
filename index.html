@@ -35,15 +35,45 @@
         .hero {
             padding: 8rem 5% 6rem; text-align: center; background: linear-gradient(to bottom, #ffffff, #f3f4f6);
         }
-        .hero h1 { font-size: 4rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.1; }
-        .hero p { font-size: 1.25rem; color: #4b5563; max-width: 600px; margin: 0 auto 2rem; }
+        .hero h1 { 
+            font-size: 4rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.1; 
+            animation: fadeUp 1s forwards cubic-bezier(0.5, 0, 0, 1);
+        }
+        .hero p { 
+            font-size: 1.25rem; color: #4b5563; max-width: 600px; margin: 0 auto 2rem; 
+            opacity: 0; transform: translateY(20px); animation: fadeUp 1s forwards 0.2s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .hero button {
+            opacity: 0; transform: translateY(20px); animation: fadeUp 1s forwards 0.4s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
         
         .features {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 2rem; padding: 5rem 5%; background: white;
+            gap: 2rem; padding: 5rem 5%; background: white; overflow: hidden;
         }
+        
+        /* --- Scroll Animation Classes --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Stagger the feature cards */
+        .feature-card:nth-child(1) { transition-delay: 0.1s; }
+        .feature-card:nth-child(2) { transition-delay: 0.3s; }
+        .feature-card:nth-child(3) { transition-delay: 0.5s; }
+
         .feature-card {
             padding: 2rem; border-radius: 12px; background: #f9fafb; border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         .feature-card h3 { color: var(--primary); margin-top: 0; }
 
@@ -129,19 +159,20 @@
         <section class="hero">
             <h1>Seamless Lab Collaboration.</h1>
             <p>Stop fighting formatting errors. Upload lab worksheets, collaborate in real-time across any device, and ensure every student gets the credit they deserve.</p>
-            <button onclick="openAuthModal('signup')" style="background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">Start Collaborating</button>
+            <button onclick="openAuthModal('signup')" style="background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s;">Start Collaborating</button>
         </section>
 
+        <!-- Added the 'reveal' class to these cards -->
         <section class="features">
-            <div class="feature-card">
+            <div class="feature-card reveal">
                 <h3>✏️ The Canvas Problem, Solved</h3>
                 <p>Downloading Microsoft Word docs from Canvas ruins formatting on iPads and MacBooks. Chennect renders PDFs perfectly, creating a flawless digital paper surface.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal">
                 <h3>⚡ Real-Time Sync</h3>
                 <p>Work with your lab partners simultaneously. See exactly where their cursors are and watch their notes appear on your screen instantly.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal">
                 <h3>📊 The PerChentage Score</h3>
                 <p>No more carrying the group. Our AI tracks every stroke and annotation, generating a tamper-proof workload report so instructors can evaluate fairly.</p>
             </div>
@@ -204,14 +235,14 @@
         import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
-        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBsSyI11CioU6lG6ZES7Oqh6EFKOCW2whs",
+            authDomain: "chennect-5ffef.firebaseapp.com",
+            projectId: "chennect-5ffef",
+            storageBucket: "chennect-5ffef.firebasestorage.app",
+            messagingSenderId: "582887572708",
+            appId: "1:582887572708:web:ee1628a6d64ced348c18f1"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -221,6 +252,30 @@
         const strokesRef = collection(db, "workspaces/lab-1/strokes");
         const cursorsRef = collection(db, "workspaces/lab-1/cursors");
 
+        // --- Intersection Observer for Scroll Animations ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 // Trigger when 15% of the element is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Stop watching once it's animated
+                    }
+                });
+            }, observerOptions);
+
+            // Target all elements with the 'reveal' class
+            document.querySelectorAll('.reveal').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+
+        // --- App Logic ---
         let currentUser = null;
         let activeTool = 'pen';
         let unsubscribeStrokes = null;
@@ -235,6 +290,11 @@
             updateAuthUI();
         }
 
+        window.onclick = function(event) {
+            const modal = document.getElementById('auth-modal');
+            if (event.target == modal) modal.style.display = "none";
+        }
+
         document.getElementById('btn-auth-toggle').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             updateAuthUI();
@@ -245,7 +305,6 @@
             document.getElementById('btn-auth-submit').innerText = isLoginMode ? 'Log In' : 'Sign Up';
             document.getElementById('btn-auth-toggle').innerText = isLoginMode ? "Don't have an account? Sign up" : "Already have an account? Log in";
             
-            // Hide name and role fields if just logging in
             document.getElementById('auth-name').style.display = isLoginMode ? 'none' : 'block';
             document.getElementById('auth-role').style.display = isLoginMode ? 'none' : 'block';
         }
@@ -266,7 +325,6 @@
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
                     
-                    // Save user profile to Firestore
                     await setDoc(doc(db, "users", userCredential.user.uid), {
                         name: name, role: role, color: randomColor
                     });
@@ -284,7 +342,6 @@
         // --- Auth State Listener (The Gatekeeper) ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is signed in, fetch their profile
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     currentUser = { id: user.uid, ...userDoc.data() };
@@ -301,7 +358,6 @@
                     startDatabaseListeners();
                 }
             } else {
-                // User is signed out
                 currentUser = null;
                 document.getElementById('marketing-site').style.display = 'block';
                 document.getElementById('app-workspace').style.display = 'none';
