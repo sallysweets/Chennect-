@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chennect - Smart PDF Collaboration</title>
-    <!-- Import PDF.js for rendering PDFs natively in the browser -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
         :root {
@@ -118,8 +117,29 @@
         <p id="ai-report-content">Processing contribution logs...</p>
     </div>
 
-    <script>
-        // --- 1. PDF Rendering Setup ---
+    <!-- Notice the type="module" here -->
+    <script type="module">
+        // Import Firebase modules directly from the CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        // --- STEP 1: PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+            // REPLACE THIS OBJECT WITH YOUR FIREBASE CONFIG
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const strokesRef = collection(db, "strokes");
+
+        // --- PDF Rendering Setup ---
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -132,13 +152,9 @@
         const annoCanvas = document.getElementById('annotation-layer');
         const annoCtx = annoCanvas.getContext('2d');
 
-        // Handle File Upload
         document.getElementById('pdf-upload').addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file.type !== 'application/pdf') {
-                alert('Please upload a valid PDF file.');
-                return;
-            }
+            if (file.type !== 'application/pdf') return alert('Please upload a valid PDF file.');
 
             const fileReader = new FileReader();
             fileReader.onload = function() {
@@ -154,28 +170,20 @@
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
                 const viewport = page.getViewport({ scale: scale });
-                
                 pdfCanvas.height = viewport.height;
                 pdfCanvas.width = viewport.width;
                 annoCanvas.height = viewport.height;
                 annoCanvas.width = viewport.width;
-
-                const renderContext = {
-                    canvasContext: pdfCtx,
-                    viewport: viewport
-                };
-                page.render(renderContext);
+                page.render({ canvasContext: pdfCtx, viewport: viewport });
             });
         }
 
-        // --- 2. Drawing & Annotation Setup ---
+        // --- Real-time Drawing Setup ---
         let isDrawing = false;
         let drawMode = true;
+        let currentStroke = [];
         
-        // Mocking user identity for tracking
         const currentUser = { id: "student_1", name: "Sally Al Khayyat", color: "#FF3366" };
-        
-        // This array tracks every single action
         const contributionLog = []; 
 
         document.getElementById('btn-draw').addEventListener('click', () => {
@@ -183,63 +191,104 @@
             alert(drawMode ? "Drawing Enabled" : "Drawing Disabled");
         });
 
-        annoCanvas.addEventListener('mousedown', startPosition);
-        annoCanvas.addEventListener('mouseup', endPosition);
-        annoCanvas.addEventListener('mousemove', draw);
-
-        function startPosition(e) {
+        annoCanvas.addEventListener('mousedown', (e) => {
             if (!drawMode) return;
             isDrawing = true;
-            draw(e);
-        }
+            currentStroke = [];
+            addPointToStroke(e);
+        });
 
-        function endPosition() {
+        annoCanvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing || !drawMode) return;
+            addPointToStroke(e);
+            renderCurrentStroke();
+        });
+
+        annoCanvas.addEventListener('mouseup', async () => {
             if (!isDrawing) return;
             isDrawing = false;
-            annoCtx.beginPath();
             
-            // Log the completed action for the PerChentage evaluation
-            contributionLog.push({
-                user: currentUser.name,
-                action: "drew_stroke",
-                timestamp: new Date().toISOString()
+            // Send the completed stroke to Firebase
+            if (currentStroke.length > 0) {
+                try {
+                    await addDoc(strokesRef, {
+                        user: currentUser.name,
+                        color: currentUser.color,
+                        points: currentStroke,
+                        timestamp: new Date().toISOString()
+                    });
+                } catch (e) {
+                    console.error("Error saving stroke: ", e);
+                }
+            }
+        });
+
+        function addPointToStroke(e) {
+            const rect = annoCanvas.getBoundingClientRect();
+            currentStroke.push({
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
             });
         }
 
-        function draw(e) {
-            if (!isDrawing || !drawMode) return;
-            
-            const rect = annoCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
+        function renderCurrentStroke() {
+            if (currentStroke.length < 2) return;
             annoCtx.lineWidth = 3;
             annoCtx.lineCap = 'round';
             annoCtx.strokeStyle = currentUser.color;
-
-            annoCtx.lineTo(x, y);
-            annoCtx.stroke();
             annoCtx.beginPath();
-            annoCtx.moveTo(x, y);
+            annoCtx.moveTo(currentStroke[0].x, currentStroke[0].y);
+            for (let i = 1; i < currentStroke.length; i++) {
+                annoCtx.lineTo(currentStroke[i].x, currentStroke[i].y);
+            }
+            annoCtx.stroke();
         }
 
-        // --- 3. PerChentage Score Evaluation Setup ---
-        document.getElementById('btn-evaluate').addEventListener('click', async () => {
+        // --- Listen for strokes from other users ---
+        onSnapshot(strokesRef, (snapshot) => {
+            // Clear the canvas to redraw everything
+            annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
+            contributionLog.length = 0; // Reset log
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                contributionLog.push(data); // Add to the AI log
+                
+                // Draw the stroke
+                const points = data.points;
+                if (points && points.length > 0) {
+                    annoCtx.lineWidth = 3;
+                    annoCtx.lineCap = 'round';
+                    annoCtx.strokeStyle = data.color;
+                    annoCtx.beginPath();
+                    annoCtx.moveTo(points[0].x, points[0].y);
+                    for (let i = 1; i < points.length; i++) {
+                        annoCtx.lineTo(points[i].x, points[i].y);
+                    }
+                    annoCtx.stroke();
+                }
+            });
+        });
+
+        // --- PerChentage Score Evaluation Setup ---
+        document.getElementById('btn-evaluate').addEventListener('click', () => {
             const reportDiv = document.getElementById('ai-report');
             const reportContent = document.getElementById('ai-report-content');
             reportDiv.style.display = 'block';
             reportContent.innerText = "Calculating PerChentage distribution...";
 
-            console.log("Data to send to AI:", contributionLog);
-
-            // Mocking the AI Response delay
             setTimeout(() => {
-                const totalStrokes = contributionLog.length;
+                // Count how many strokes belong to you vs others
+                let myStrokes = 0;
+                contributionLog.forEach(log => {
+                    if (log.user === currentUser.name) myStrokes++;
+                });
+
                 reportContent.innerHTML = `
-                    <br><strong>${currentUser.name}</strong> contributed ${totalStrokes} elements.<br><br>
+                    <br><strong>${currentUser.name}</strong> contributed ${myStrokes} elements.<br><br>
                     <em>AI Analysis: Excellent active participation detected. The workload is evenly distributed across the session. <br><br><strong>Final PerChentage Score: 100% (Fair Share)</strong></em>
                 `;
-            }, 2000);
+            }, 1500);
         });
     </script>
 </body>
