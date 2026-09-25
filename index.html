@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chennect - Smart PDF Collaboration</title>
+    <!-- Import PDF.js for rendering PDFs natively in the browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --bg: #F3F4F6;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0;
+            font-style: italic;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        button, input[type="file"]::file-selector-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        button:hover { background: #4338CA; }
+        
+        #btn-evaluate {
+            background: #059669;
+        }
+        #btn-evaluate:hover {
+            background: #047857;
+        }
+        
+        #workspace-container {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        #canvas-wrapper {
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        #pdf-render {
+            display: block;
+        }
+        
+        #annotation-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+
+        #ai-report {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            max-width: 300px;
+            border-left: 4px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="brand">Chennect</h1>
+        <div class="controls">
+            <input type="file" id="pdf-upload" accept="application/pdf" />
+            <button id="btn-draw">Toggle Draw Mode</button>
+            <button id="btn-evaluate">Calculate PerChentage Score</button>
+        </div>
+    </header>
+
+    <div id="workspace-container">
+        <div id="canvas-wrapper">
+            <canvas id="pdf-render"></canvas>
+            <canvas id="annotation-layer"></canvas>
+        </div>
+    </div>
+
+    <div id="ai-report">
+        <strong>PerChentage Score Analysis:</strong>
+        <p id="ai-report-content">Processing contribution logs...</p>
+    </div>
+
+    <script>
+        // --- 1. PDF Rendering Setup ---
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        const scale = 1.5; 
+        
+        const pdfCanvas = document.getElementById('pdf-render');
+        const pdfCtx = pdfCanvas.getContext('2d');
+        const annoCanvas = document.getElementById('annotation-layer');
+        const annoCtx = annoCanvas.getContext('2d');
+
+        // Handle File Upload
+        document.getElementById('pdf-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file.type !== 'application/pdf') {
+                alert('Please upload a valid PDF file.');
+                return;
+            }
+
+            const fileReader = new FileReader();
+            fileReader.onload = function() {
+                const typedarray = new Uint8Array(this.result);
+                pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                    pdfDoc = pdf;
+                    renderPage(pageNum);
+                });
+            };
+            fileReader.readAsArrayBuffer(file);
+        });
+
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({ scale: scale });
+                
+                pdfCanvas.height = viewport.height;
+                pdfCanvas.width = viewport.width;
+                annoCanvas.height = viewport.height;
+                annoCanvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: pdfCtx,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+        }
+
+        // --- 2. Drawing & Annotation Setup ---
+        let isDrawing = false;
+        let drawMode = true;
+        
+        // Mocking user identity for tracking
+        const currentUser = { id: "student_1", name: "Sally Al Khayyat", color: "#FF3366" };
+        
+        // This array tracks every single action
+        const contributionLog = []; 
+
+        document.getElementById('btn-draw').addEventListener('click', () => {
+            drawMode = !drawMode;
+            alert(drawMode ? "Drawing Enabled" : "Drawing Disabled");
+        });
+
+        annoCanvas.addEventListener('mousedown', startPosition);
+        annoCanvas.addEventListener('mouseup', endPosition);
+        annoCanvas.addEventListener('mousemove', draw);
+
+        function startPosition(e) {
+            if (!drawMode) return;
+            isDrawing = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            if (!isDrawing) return;
+            isDrawing = false;
+            annoCtx.beginPath();
+            
+            // Log the completed action for the PerChentage evaluation
+            contributionLog.push({
+                user: currentUser.name,
+                action: "drew_stroke",
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function draw(e) {
+            if (!isDrawing || !drawMode) return;
+            
+            const rect = annoCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            annoCtx.lineWidth = 3;
+            annoCtx.lineCap = 'round';
+            annoCtx.strokeStyle = currentUser.color;
+
+            annoCtx.lineTo(x, y);
+            annoCtx.stroke();
+            annoCtx.beginPath();
+            annoCtx.moveTo(x, y);
+        }
+
+        // --- 3. PerChentage Score Evaluation Setup ---
+        document.getElementById('btn-evaluate').addEventListener('click', async () => {
+            const reportDiv = document.getElementById('ai-report');
+            const reportContent = document.getElementById('ai-report-content');
+            reportDiv.style.display = 'block';
+            reportContent.innerText = "Calculating PerChentage distribution...";
+
+            console.log("Data to send to AI:", contributionLog);
+
+            // Mocking the AI Response delay
+            setTimeout(() => {
+                const totalStrokes = contributionLog.length;
+                reportContent.innerHTML = `
+                    <br><strong>${currentUser.name}</strong> contributed ${totalStrokes} elements.<br><br>
+                    <em>AI Analysis: Excellent active participation detected. The workload is evenly distributed across the session. <br><br><strong>Final PerChentage Score: 100% (Fair Share)</strong></em>
+                `;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
