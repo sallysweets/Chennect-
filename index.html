@@ -9,7 +9,7 @@
         :root {
             --primary: #000000;
             --accent: #2563EB;
-            --bg: #F5F5F7; /* Apple's signature light gray */
+            --bg: #F5F5F7; 
             --surface: #FFFFFF;
         }
         body {
@@ -155,7 +155,6 @@
 
     <!-- Floating iPad-Style Toolbar -->
     <div class="toolbar">
-        <!-- Using emojis as simple icons for now, can be replaced with SVGs -->
         <button class="tool-btn active" id="tool-pen" title="Pen">✏️</button>
         <button class="tool-btn" id="tool-highlighter" title="Highlighter">🖍️</button>
         <button class="tool-btn" id="tool-eraser" title="Eraser">🧼</button>
@@ -174,14 +173,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBsSyI11CioU6lG6ZES7Oqh6EFKOCW2whs",
+            authDomain: "chennect-5ffef.firebaseapp.com",
+            projectId: "chennect-5ffef",
+            storageBucket: "chennect-5ffef.firebasestorage.app",
+            messagingSenderId: "582887572708",
+            appId: "1:582887572708:web:ee1628a6d64ced348c18f1"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -191,7 +190,7 @@
         const cursorsRef = collection(db, "workspaces/lab-1/cursors");
 
         let currentUser = null;
-        let activeTool = 'pen'; // 'pen', 'highlighter', or 'eraser'
+        let activeTool = 'pen'; 
 
         // --- Landing Page Logic ---
         document.getElementById('btn-join').addEventListener('click', () => {
@@ -203,7 +202,6 @@
             const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             currentUser = { id: uid, name: name, role: role, color: randomColor };
 
-            // Apple-style fade out transition
             const landing = document.getElementById('landing-page');
             landing.style.transform = 'scale(1.1)';
             landing.style.opacity = '0';
@@ -224,10 +222,8 @@
 
         for (const [id, toolName] of Object.entries(tools)) {
             document.getElementById(id).addEventListener('click', (e) => {
-                // Update UI active state
                 document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
                 e.currentTarget.classList.add('active');
-                // Set active tool
                 activeTool = toolName;
             });
         }
@@ -298,7 +294,6 @@
             isDrawing = false;
             
             if (currentStroke.length > 0) {
-                // Save the stroke to Firebase WITH the selected tool type
                 await addDoc(strokesRef, {
                     userId: currentUser.id,
                     userName: currentUser.name,
@@ -315,7 +310,6 @@
             currentStroke.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
         }
 
-        // Renders just the line you are currently drawing
         function renderLocalStroke() {
             if (currentStroke.length < 2) return;
             applyToolSettings(annoCtx, activeTool, currentUser.color);
@@ -326,7 +320,6 @@
             annoCtx.stroke();
         }
 
-        // Configures the canvas context based on the tool (Pen, Highlighter, Eraser)
         function applyToolSettings(ctx, tool, color) {
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
@@ -336,13 +329,12 @@
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = color;
             } else if (tool === 'highlighter') {
-                ctx.globalCompositeOperation = 'multiply'; // Creates that transparent overlay effect
+                ctx.globalCompositeOperation = 'multiply'; 
                 ctx.lineWidth = 20;
-                // Convert hex to rgba for transparency
                 let r = parseInt(color.slice(1, 3), 16), g = parseInt(color.slice(3, 5), 16), b = parseInt(color.slice(5, 7), 16);
                 ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.3)`;
             } else if (tool === 'eraser') {
-                ctx.globalCompositeOperation = 'destination-out'; // Actually erases pixels on the layer
+                ctx.globalCompositeOperation = 'destination-out'; 
                 ctx.lineWidth = 30;
                 ctx.strokeStyle = 'rgba(0,0,0,1)';
             }
@@ -355,11 +347,9 @@
         // --- Database Listeners ---
         function startDatabaseListeners() {
             onSnapshot(strokesRef, (snapshot) => {
-                // To prevent lag, we only redraw everything when a stroke finishes
                 annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
                 contributionLog.length = 0; 
                 
-                // Sort by timestamp so overlapping lines draw in the correct order
                 const strokes = [];
                 snapshot.forEach(doc => strokes.push(doc.data()));
                 strokes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -419,7 +409,6 @@
                 let reportHTML = "<ul style='padding-left: 20px; color: #444;'>";
                 const userTotals = {};
                 
-                // Only count actual work, not erasing!
                 contributionLog.forEach(log => {
                     if (log.tool !== 'eraser') {
                         userTotals[log.userName] = (userTotals[log.userName] || 0) + 1;
