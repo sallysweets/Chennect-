@@ -280,8 +280,7 @@
         import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, getDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
-        // --- 1. FIREBASE KEYS ---
-        // 🚨 Paste your exact keys here 🚨
+        // --- FIREBASE KEYS ---
         const firebaseConfig = {
             apiKey: "AIzaSyBsSyI11CioU61G6ZES7Oqh6EFKOCW2whs",
             authDomain: "chennect-5ffef.firebaseapp.com",
@@ -291,9 +290,8 @@
             appId: "1:582887572708:web:ee1628a6d64ced348c18f1"
         };
 
-        // --- 2. GEMINI AI API KEY ---
-        // 🚨 Paste your key from aistudio.google.com here 🚨
-        const GEMINI_API_KEY = "PUT_YOUR_GEMINI_KEY_HERE";
+        // --- GEMINI AI API KEY ---
+        const GEMINI_API_KEY = "AQ.Ab8RN6LZkbQMVgPg8tBFw_Z8N5jhzmGQAJJVGMWSW0dp4VVqKg";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -529,11 +527,6 @@
             thinkingMsg.className = "ai-msg system";
             thinkingMsg.innerText = "Analyzing document...";
             chatBox.appendChild(thinkingMsg);
-
-            if(GEMINI_API_KEY === "PUT_YOUR_GEMINI_KEY_HERE" || !GEMINI_API_KEY) {
-                thinkingMsg.innerText = "Error: You need to paste your free Gemini API key into the code at line 379 to use the real AI! Get it at aistudio.google.com";
-                return;
-            }
 
             const promptContext = extractedPdfText ? `Here is the text extracted from the student's current lab document: "${extractedPdfText.substring(0, 5000)}". ` : `No document is currently loaded on the screen. `;
             const finalPrompt = `You are an expert, helpful university lab assistant. ${promptContext} The student asks: "${text}". Answer concisely and helpfully.`;
