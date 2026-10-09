@@ -9,41 +9,62 @@
         :root {
             --primary: #8C1D40; 
             --secondary: #FFC627; 
-            --bg-light: #F9FAFB;
-            --text-light: #111827;
-            --bg-dark: #000000;
-            --text-dark: #F5F5F7;
+            
+            /* Theme Variables (Defaults to Dark Mode) */
+            --bg-color: #000000;
+            --text-color: #F5F5F7;
+            --text-muted: #86868b;
+            --nav-bg: rgba(0, 0, 0, 0.7);
+            --box-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --input-text: #ffffff;
+            --heading-grad: linear-gradient(180deg, #ffffff 30%, #888888 100%);
+            --modal-overlay: rgba(0,0,0,0.8);
         }
+
+        body.light-mode {
+            --bg-color: #F9FAFB;
+            --text-color: #111827;
+            --text-muted: #4b5563;
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --box-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --input-bg: #f9fafb;
+            --input-text: #111827;
+            --heading-grad: linear-gradient(180deg, #111827 30%, #4b5563 100%);
+            --modal-overlay: rgba(255,255,255,0.6);
+        }
+
         body, html {
             margin: 0; padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             scroll-behavior: smooth;
-            background: var(--bg-dark); /* Default to dark for the Apple-style pitch */
+            background: var(--bg-color); 
+            color: var(--text-color);
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         /* --- APPLE-STYLE LANDING PAGE --- */
-        #marketing-site { 
-            display: block; 
-            background-color: var(--bg-dark); 
-            color: var(--text-dark);
-            min-height: 100vh;
-        }
+        #marketing-site { display: block; min-height: 100vh; }
         
         .navbar {
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 1.5rem 5%; background: rgba(0, 0, 0, 0.7); 
+            padding: 1.5rem 5%; background: var(--nav-bg); 
             backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: blur(20px);
-            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.4s ease;
         }
-        .nav-brand { font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+        .nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--text-color); letter-spacing: -0.5px; }
         
-        /* Apple Pill-Shaped Buttons */
+        .nav-controls { display: flex; gap: 15px; align-items: center; }
+        
         .btn-pill {
-            background: #fff; color: #000; border: none; padding: 10px 24px;
+            background: var(--text-color); color: var(--bg-color); border: none; padding: 10px 24px;
             border-radius: 980px; font-weight: 600; font-size: 0.95rem; 
-            cursor: pointer; transition: transform 0.2s, background 0.2s;
+            cursor: pointer; transition: transform 0.2s, opacity 0.2s;
         }
-        .btn-pill:hover { transform: scale(1.02); background: #f0f0f0; }
+        .btn-pill:hover { transform: scale(1.02); opacity: 0.9; }
         
         .btn-pill-primary {
             background: linear-gradient(135deg, var(--primary), #b32551); color: white;
@@ -52,40 +73,33 @@
         }
         .btn-pill-primary:hover { transform: scale(1.03); }
 
-        .hero { 
-            padding: 10rem 5% 6rem; text-align: center; 
-            display: flex; flex-direction: column; align-items: center;
-        }
+        .hero { padding: 10rem 5% 6rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
         .hero h1 { 
             font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.05; 
-            letter-spacing: -0.04em;
-            background: linear-gradient(180deg, #ffffff 30%, #888888 100%);
+            letter-spacing: -0.04em; background: var(--heading-grad);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .hero p { 
-            font-size: clamp(1.1rem, 2vw, 1.5rem); color: #86868b; max-width: 600px; margin: 0 auto 2.5rem; 
+            font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-muted); max-width: 600px; margin: 0 auto 2.5rem; 
             animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0;
         }
-        .hero-actions {
-            animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0;
-        }
+        .hero-actions { animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; }
 
-        /* Apple Bento Box Grid (Fixes the white space bug completely) */
         .bento-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
             gap: 24px; padding: 2rem 5% 6rem; max-width: 1200px; margin: 0 auto;
         }
         .bento-card { 
             padding: 2.5rem; border-radius: 24px; 
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--box-bg); border: 1px solid var(--border-color);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, background 0.4s ease;
             animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0;
         }
-        .bento-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.05); }
-        .bento-card h3 { color: #fff; margin-top: 0; font-size: 1.5rem; letter-spacing: -0.02em; }
-        .bento-card p { color: #86868b; line-height: 1.5; margin-bottom: 0; }
+        .bento-card:hover { transform: translateY(-5px); }
+        .bento-card h3 { color: var(--text-color); margin-top: 0; font-size: 1.5rem; letter-spacing: -0.02em; }
+        .bento-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 0; }
         .bento-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
 
         @keyframes slideUpFade { 
@@ -96,37 +110,51 @@
         /* --- AUTH MODAL --- */
         #auth-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2000;
-            justify-content: center; align-items: center; color: var(--text-light);
+            background: var(--modal-overlay); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2000;
+            justify-content: center; align-items: center; 
         }
         .auth-box { 
-            background: #fff; padding: 3rem 2.5rem; border-radius: 24px; width: 90%; max-width: 380px; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center;
+            background: var(--box-bg); border: 1px solid var(--border-color);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            padding: 3rem 2.5rem; border-radius: 24px; width: 90%; max-width: 380px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; color: var(--text-color);
         }
-        .auth-box h2 { margin-top: 0; margin-bottom: 2rem; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.02em; }
+        .auth-box h2 { margin-top: 0; margin-bottom: 1.5rem; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.02em; }
+        
+        /* New In-UI Error Message */
+        #auth-error {
+            display: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px; text-align: left; line-height: 1.4;
+        }
+
         .auth-box input, .auth-box select { 
-            width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid #e5e7eb; 
-            border-radius: 12px; box-sizing: border-box; font-size: 1rem; background: #f9fafb;
-            transition: border-color 0.2s;
+            width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid var(--border-color); 
+            border-radius: 12px; box-sizing: border-box; font-size: 1rem; 
+            background: var(--input-bg); color: var(--input-text); transition: border-color 0.2s;
         }
-        .auth-box input:focus { outline: none; border-color: var(--primary); }
+        .auth-box input:focus, .auth-box select:focus { outline: none; border-color: var(--primary); }
+        
+        .pw-wrapper { position: relative; margin-bottom: 16px; }
+        .pw-wrapper input { margin-bottom: 0; padding-right: 45px; }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);
+        }
+
         .auth-btn { 
             width: 100%; background: var(--primary); color: white; border: none; 
             padding: 14px; border-radius: 980px; font-weight: 600; font-size: 1.1rem; cursor: pointer; 
-            margin-top: 10px; transition: background 0.2s;
+            margin-top: 5px; transition: transform 0.2s;
         }
-        .auth-btn:hover { background: #6b1530; }
-        .toggle-auth { margin-top: 20px; font-size: 0.95rem; color: #6b7280; cursor: pointer; font-weight: 500; }
+        .auth-btn:hover { transform: scale(1.02); }
+        .toggle-auth { margin-top: 20px; font-size: 0.95rem; color: var(--text-muted); cursor: pointer; font-weight: 500; }
         .toggle-auth:hover { color: var(--primary); }
 
         /* --- MAIN APP WORKSPACE --- */
-        #app-workspace { 
-            display: none; height: 100vh; flex-direction: column; overflow: hidden; position: relative; 
-            background: var(--bg-light); color: var(--text-light);
-        }
-        .app-header { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; z-index: 10; }
+        #app-workspace { display: none; height: 100vh; flex-direction: column; overflow: hidden; position: relative; }
+        .app-header { background: var(--box-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; }
         .app-controls { display: flex; gap: 10px; align-items: center; }
-        .logout-btn { background: #f3f4f6; color: #4b5563; border: none; padding: 8px 16px; border-radius: 980px; font-weight: 500; cursor: pointer; }
+        .logout-btn { background: rgba(140, 29, 64, 0.1); color: var(--primary); border: none; padding: 8px 16px; border-radius: 980px; font-weight: 600; cursor: pointer; }
         
         #btn-evaluate {
             background: linear-gradient(135deg, var(--secondary), #d9a51c); color: #111; border: none;
@@ -139,59 +167,51 @@
         #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; }
         #cursors-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 
-        /* --- TOOLBAR --- */
+        /* --- TOOLBAR & AI --- */
         .toolbar {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 12px 24px; border-radius: 980px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: flex; gap: 15px; align-items: center; border: 1px solid rgba(0,0,0,0.05); z-index: 100;
+            background: var(--box-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 12px 24px; border-radius: 980px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex; gap: 15px; align-items: center; border: 1px solid var(--border-color); z-index: 100;
         }
         .tool-btn { background: transparent; border: none; font-size: 1.3rem; padding: 10px; border-radius: 50%; cursor: pointer; width: 48px; height: 48px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .tool-btn.active { background: #fef3c7; box-shadow: inset 0 0 0 2px var(--secondary); }
-        
-        /* AI Button */
-        #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); margin-left: 5px; }
+        .tool-btn.active { background: rgba(255, 198, 39, 0.2); box-shadow: inset 0 0 0 2px var(--secondary); }
+        #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; margin-left: 5px; }
         #tool-ai:hover { transform: scale(1.05); }
-
         input[type="file"]::file-selector-button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 980px; cursor: pointer; font-weight: 600; margin-left: 10px; }
 
         .remote-cursor { position: absolute; transition: transform 0.1s linear; display: flex; align-items: flex-start; }
         .cursor-dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .cursor-name { background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 8px; font-weight: 500; }
 
-        #ai-report {
-            display: none; position: fixed; top: 80px; right: 30px; background: white;
-            padding: 25px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            max-width: 300px; border-left: 4px solid var(--secondary); z-index: 100;
-        }
+        #ai-report { display: none; position: fixed; top: 80px; right: 30px; background: var(--box-bg); color: var(--text-color); padding: 25px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 300px; border: 1px solid var(--border-color); border-left: 4px solid var(--secondary); z-index: 100; backdrop-filter: blur(20px); }
 
-        /* --- SMART AI ASSISTANT PANEL --- */
         #ai-panel {
             position: fixed; right: -100%; top: 80px; width: 350px; max-width: 90vw; height: calc(100vh - 120px);
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(30px); border-radius: 20px 0 0 20px;
-            box-shadow: -10px 0 40px rgba(0,0,0,0.1); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; flex-direction: column; z-index: 90; border: 1px solid #e5e7eb;
+            background: var(--box-bg); backdrop-filter: blur(30px); border-radius: 20px 0 0 20px;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.3); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; z-index: 90; border: 1px solid var(--border-color); color: var(--text-color);
         }
         #ai-panel.open { right: 0; }
         .ai-header { padding: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 20px 0 0 0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.01em; }
         .ai-close { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .ai-chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; font-size: 0.95rem; }
         .ai-msg { padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.5; }
-        .ai-msg.system { background: #f3f4f6; align-self: flex-start; border-bottom-left-radius: 4px; color: #111; }
+        .ai-msg.system { background: rgba(255,255,255,0.1); align-self: flex-start; border-bottom-left-radius: 4px; }
         .ai-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .ai-input-area { padding: 15px; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; background: white; }
-        .ai-input-area input { flex: 1; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 980px; outline: none; font-size: 0.95rem; }
+        .ai-input-area { padding: 15px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background: transparent; }
+        .ai-input-area input { flex: 1; padding: 12px 16px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--input-text); border-radius: 980px; outline: none; font-size: 0.95rem; }
         .ai-input-area input:focus { border-color: #6366f1; }
         .ai-input-area button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 980px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <!-- Apple-Style Landing Page -->
     <div id="marketing-site">
         <nav class="navbar">
             <div class="nav-brand">Chennect</div>
-            <div class="nav-links">
+            <div class="nav-controls">
+                <button id="btn-theme-toggle" class="btn-pill" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color);">🌞 Light Mode</button>
                 <button id="btn-nav-login" class="btn-pill">Log In</button>
             </div>
         </nav>
@@ -223,17 +243,26 @@
         </section>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Auth Modal with New Error UI & Password Toggle -->
     <div id="auth-modal">
         <div class="auth-box">
             <h2 id="auth-title">Create Account</h2>
+            
+            <div id="auth-error"></div>
+            
             <input type="text" id="auth-name" placeholder="Full Legal Name" />
             <input type="email" id="auth-email" placeholder="University Email" />
-            <input type="password" id="auth-password" placeholder="Password" />
+            
+            <div class="pw-wrapper">
+                <input type="password" id="auth-password" placeholder="Password" />
+                <button type="button" class="pw-toggle" id="btn-pw-toggle">👁️</button>
+            </div>
+            
             <select id="auth-role">
                 <option value="student">Undergraduate Student</option>
                 <option value="teacher">Faculty / Instructor</option>
             </select>
+            
             <button class="auth-btn" id="btn-auth-submit">Sign Up</button>
             <div class="toggle-auth" id="btn-auth-toggle">Already have an account? Log in</div>
         </div>
@@ -242,7 +271,7 @@
     <!-- Main Workspace -->
     <div id="app-workspace">
         <header class="app-header">
-            <h1 class="nav-brand" style="margin:0; color: #111;">Chennect Workspace</h1>
+            <h1 class="nav-brand" style="margin:0;">Chennect Workspace</h1>
             <div class="app-controls">
                 <span id="user-display-name" style="font-weight: 600; margin-right: 15px;"></span>
                 <button id="btn-evaluate">PerChentage Score</button>
@@ -262,12 +291,11 @@
             <button class="tool-btn active" id="tool-pen" title="Pen">✏️</button>
             <button class="tool-btn" id="tool-highlighter" title="Highlighter">🖍️</button>
             <button class="tool-btn" id="tool-eraser" title="Eraser">🧼</button>
-            <div style="width: 1px; height: 25px; background: #d1d5db; margin: 0 5px;"></div>
+            <div style="width: 1px; height: 25px; background: var(--border-color); margin: 0 5px;"></div>
             <button class="tool-btn" id="tool-ai" title="Ask AI">✨</button>
             <input type="file" id="pdf-upload" accept="application/pdf" />
         </div>
 
-        <!-- AI Assistant Panel -->
         <div id="ai-panel">
             <div class="ai-header">
                 <span>Chennect AI Assistant</span>
@@ -288,12 +316,13 @@
         </div>
     </div>
 
-    <!-- FIREBASE & APP LOGIC -->
+    <!-- FIREBASE SETUP -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
+        // 🚨 IMPORTANT: Replace this block with the exact copy from your Firebase Dashboard 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyBsSyI11CioU6lG6ZES7Oqh6EFKOCW2whs",
             authDomain: "chennect-5ffef.firebaseapp.com",
@@ -309,7 +338,14 @@
         const strokesRef = collection(db, "workspaces/lab-1/strokes");
         const cursorsRef = collection(db, "workspaces/lab-1/cursors");
 
-        // --- Auth UI Logic & Bulletproof Event Listeners ---
+        // --- Theme Toggle Logic ---
+        document.getElementById('btn-theme-toggle').addEventListener('click', (e) => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            e.target.innerText = isLight ? '🌙 Dark Mode' : '🌞 Light Mode';
+        });
+
+        // --- Auth UI Logic & In-UI Errors ---
         let currentUser = null;
         let activeTool = 'pen';
         let unsubscribeStrokes = null, unsubscribeCursors = null;
@@ -317,14 +353,27 @@
         
         function openAuthModal(mode) {
             document.getElementById('auth-modal').style.display = 'flex';
+            document.getElementById('auth-error').style.display = 'none'; // Clear old errors
             isLoginMode = (mode === 'login');
             updateAuthUI();
         }
 
-        // Attach event listeners safely after DOM loads
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('btn-nav-login').addEventListener('click', () => openAuthModal('login'));
             document.getElementById('btn-hero-signup').addEventListener('click', () => openAuthModal('signup'));
+            
+            // Password Show/Hide Toggle
+            const pwInput = document.getElementById('auth-password');
+            const pwToggle = document.getElementById('btn-pw-toggle');
+            pwToggle.addEventListener('click', () => {
+                if (pwInput.type === 'password') {
+                    pwInput.type = 'text';
+                    pwToggle.innerText = '🙈';
+                } else {
+                    pwInput.type = 'password';
+                    pwToggle.innerText = '👁️';
+                }
+            });
         });
 
         window.onclick = function(event) {
@@ -333,7 +382,9 @@
         }
 
         document.getElementById('btn-auth-toggle').addEventListener('click', () => {
-            isLoginMode = !isLoginMode; updateAuthUI();
+            isLoginMode = !isLoginMode; 
+            document.getElementById('auth-error').style.display = 'none';
+            updateAuthUI();
         });
 
         function updateAuthUI() {
@@ -344,22 +395,35 @@
             document.getElementById('auth-role').style.display = isLoginMode ? 'none' : 'block';
         }
 
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.innerText = message.replace('Firebase: ', ''); // Clean up the ugly "Firebase: " text
+            errorDiv.style.display = 'block';
+        }
+
         document.getElementById('btn-auth-submit').addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
+            document.getElementById('auth-error').style.display = 'none';
+            
             try {
                 if (isLoginMode) {
                     await signInWithEmailAndPassword(auth, email, password);
                 } else {
                     const name = document.getElementById('auth-name').value;
                     const role = document.getElementById('auth-role').value;
-                    if(!name) return alert("Please enter your name");
+                    if(!name) {
+                        showAuthError("Please enter your full name.");
+                        return;
+                    }
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
                     await setDoc(doc(db, "users", userCredential.user.uid), { name: name, role: role, color: randomColor });
                 }
                 document.getElementById('auth-modal').style.display = 'none';
-            } catch (error) { alert(error.message); }
+            } catch (error) { 
+                showAuthError(error.message); // Displays error beautifully inside the modal
+            }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
@@ -369,18 +433,14 @@
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     currentUser = { id: user.uid, ...userDoc.data() };
-                    
                     document.getElementById('marketing-site').style.display = 'none';
-                    document.body.style.background = 'var(--bg-light)'; // Switch body bg to light mode
                     document.getElementById('app-workspace').style.display = 'flex';
-                    
                     document.getElementById('user-display-name').innerText = currentUser.name;
                     document.getElementById('btn-evaluate').style.display = (currentUser.role === "teacher") ? 'block' : 'none';
                     startDatabaseListeners();
                 }
             } else {
                 currentUser = null;
-                document.body.style.background = 'var(--bg-dark)'; // Switch body bg to dark mode
                 document.getElementById('marketing-site').style.display = 'block';
                 document.getElementById('app-workspace').style.display = 'none';
                 if(unsubscribeStrokes) unsubscribeStrokes();
@@ -402,7 +462,6 @@
         document.getElementById('tool-ai').addEventListener('click', () => aiPanel.classList.toggle('open'));
         document.getElementById('close-ai').addEventListener('click', () => aiPanel.classList.remove('open'));
 
-        // Simulated AI Demo for Pitch
         document.getElementById('ai-send').addEventListener('click', sendAIMessage);
         document.getElementById('ai-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendAIMessage(); });
 
@@ -568,12 +627,12 @@
             reportContent.innerText = "Calculating PerChentage distribution...";
 
             setTimeout(() => {
-                let reportHTML = "<ul style='padding-left: 20px; color: #444;'>";
+                let reportHTML = "<ul style='padding-left: 20px; color: var(--text-color);'>";
                 const userTotals = {};
                 contributionLog.forEach(log => { if (log.tool !== 'eraser') { userTotals[log.userName] = (userTotals[log.userName] || 0) + 1; } });
                 for (const [name, count] of Object.entries(userTotals)) { reportHTML += `<li><strong>${name}</strong>: ${count} interactions</li>`; }
                 reportHTML += "</ul>";
-                reportContent.innerHTML = `${reportHTML}<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.9rem; color: #666;"><em>AI Analysis: Workload breakdown tracked successfully. Erasing behavior ignored.</em></div>`;
+                reportContent.innerHTML = `${reportHTML}<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-muted);"><em>AI Analysis: Workload breakdown tracked successfully. Erasing behavior ignored.</em></div>`;
             }, 1200);
         });
     </script>
