@@ -83,6 +83,17 @@
         .toggle-auth { margin-top: 20px; font-size: 0.95rem; color: var(--text-muted); cursor: pointer; font-weight: 500; }
         .toggle-auth:hover { color: var(--primary); }
 
+        /* --- CUSTOM CONFIRM MODAL --- */
+        #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2500; justify-content: center; align-items: center; }
+        .confirm-box { background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 2.5rem; border-radius: 24px; width: 90%; max-width: 350px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; color: var(--text-color); }
+        .confirm-box h2 { margin-top: 0; font-size: 1.5rem; margin-bottom: 10px; }
+        .confirm-box p { color: var(--text-muted); margin-bottom: 25px; line-height: 1.4; font-size: 0.95rem; }
+        .confirm-actions { display: flex; gap: 10px; }
+        .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: var(--text-color); border: none; padding: 12px; border-radius: 980px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.2); }
+        .btn-danger { flex: 1; background: #ef4444; color: white; border: none; padding: 12px; border-radius: 980px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-danger:hover { background: #dc2626; }
+
         /* --- MAIN APP WORKSPACE --- */
         #app-workspace { display: none; height: 100vh; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-color); }
         .app-header { background: var(--box-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
@@ -95,13 +106,7 @@
         #workspace-container { flex: 1; overflow: auto; display: flex; justify-content: center; padding: 40px 2rem 100px; position: relative; }
         
         /* Sleek Dropzone UI */
-        #dropzone {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; max-width: 600px; height: 350px; margin: auto;
-            border: 2px dashed var(--text-muted); border-radius: 24px;
-            background: transparent; color: var(--text-muted); text-align: center;
-            transition: all 0.3s ease; cursor: pointer;
-        }
+        #dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; height: 350px; margin: auto; border: 2px dashed var(--text-muted); border-radius: 24px; background: transparent; color: var(--text-muted); text-align: center; transition: all 0.3s ease; cursor: pointer; }
         #dropzone:hover, #dropzone.dragover { border-color: var(--primary); background: rgba(140, 29, 64, 0.05); color: var(--text-color); }
         #dropzone svg { width: 48px; height: 48px; margin-bottom: 15px; color: var(--primary); }
         
@@ -109,7 +114,7 @@
         #hidden-pdf-upload { display: none; }
 
         /* Hidden Canvas until loaded */
-        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; }
+        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; margin-bottom: 50px; }
         #pdf-render { display: block; background: white; border-radius: 8px; }
         #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; }
         #cursors-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
@@ -119,9 +124,7 @@
         .tool-btn { background: transparent; border: none; padding: 10px; border-radius: 50%; cursor: pointer; width: 48px; height: 48px; transition: 0.2s; display: flex; align-items: center; justify-content: center; color: var(--text-color); }
         .tool-btn.active { background: rgba(255, 198, 39, 0.2); box-shadow: inset 0 0 0 2px var(--secondary); color: var(--secondary); }
         .tool-btn:hover { background: rgba(255, 255, 255, 0.1); }
-        
         .divider { width: 1px; height: 25px; background: var(--border-color); margin: 0 5px; }
-        
         #tool-upload { color: var(--primary); }
         #tool-clear { color: #ef4444; }
         #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; }
@@ -211,6 +214,18 @@
         </div>
     </div>
 
+    <!-- Custom In-App Confirm Modal -->
+    <div id="confirm-modal">
+        <div class="confirm-box">
+            <h2>Clear Workspace?</h2>
+            <p>Are you sure you want to clear all drawings and remove this PDF? This action cannot be undone.</p>
+            <div class="confirm-actions">
+                <button id="btn-cancel-clear" class="btn-cancel">Cancel</button>
+                <button id="btn-confirm-clear" class="btn-danger">Clear Document</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Workspace -->
     <div id="app-workspace">
         <header class="app-header">
@@ -280,7 +295,8 @@
         import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, getDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
-        // --- FIREBASE KEYS ---
+        // --- 1. FIREBASE KEYS ---
+        // 🚨 Paste your exact keys here 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyBsSyI11CioU61G6ZES7Oqh6EFKOCW2whs",
             authDomain: "chennect-5ffef.firebaseapp.com",
@@ -290,14 +306,15 @@
             appId: "1:582887572708:web:ee1628a6d64ced348c18f1"
         };
 
-        // --- GEMINI AI API KEY ---
-        const GEMINI_API_KEY = "AQ.Ab8RN6LZkbQMVgPg8tBFw_Z8N5jhzmGQAJJVGMWSW0dp4VVqKg";
+        // --- 2. GEMINI AI API KEY ---
+        // 🚨 Paste your NEW AIza... key from aistudio.google.com here 🚨
+        const GEMINI_API_KEY = "PUT_YOUR_NEW_AIZA_KEY_HERE";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // Force Session Persistence: Logs user out if they close the tab or refresh
+        // Force Session Persistence
         setPersistence(auth, browserSessionPersistence);
         
         const strokesRef = collection(db, "workspaces/lab-1/strokes");
@@ -323,7 +340,6 @@
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer);
             if (currentUser) {
-                // Signs user out after exactly 5 minutes of doing nothing
                 inactivityTimer = setTimeout(() => {
                     signOut(auth);
                     alert("You have been automatically signed out due to 5 minutes of inactivity.");
@@ -335,7 +351,6 @@
         window.addEventListener('mousedown', resetInactivityTimer);
         window.addEventListener('touchstart', resetInactivityTimer);
 
-        // Forces logout and removes cursors if you close the tab or hit refresh
         window.addEventListener('beforeunload', () => { 
             if (currentUser) {
                 deleteDoc(doc(db, "workspaces/lab-1/cursors", currentUser.id));
@@ -381,9 +396,25 @@
             document.getElementById('auth-role').style.display = isLoginMode ? 'none' : 'block';
         }
 
-        function showAuthError(message) {
+        function showAuthError(error) {
             const errorDiv = document.getElementById('auth-error');
-            errorDiv.innerText = message.replace('Firebase: ', '');
+            let friendlyMessage = "An unexpected error occurred. Please try again.";
+            
+            if (error.code === 'auth/email-already-in-use') {
+                friendlyMessage = "An account with this email already exists. Please log in instead.";
+            } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                friendlyMessage = "Incorrect email or password. Please try again.";
+            } else if (error.code === 'auth/weak-password') {
+                friendlyMessage = "Your password is too weak. Please use at least 6 characters.";
+            } else if (error.code === 'auth/invalid-email') {
+                friendlyMessage = "Please enter a valid email address.";
+            } else if (error.code === 'auth/missing-password') {
+                friendlyMessage = "Please enter a password.";
+            } else if (typeof error === 'string') {
+                friendlyMessage = error; 
+            }
+
+            errorDiv.innerText = friendlyMessage;
             errorDiv.style.display = 'block';
         }
 
@@ -405,7 +436,7 @@
                 }
                 document.getElementById('auth-modal').style.display = 'none';
                 resetInactivityTimer();
-            } catch (error) { showAuthError(error.message); }
+            } catch (error) { showAuthError(error); }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
@@ -432,7 +463,7 @@
             }
         });
 
-        // --- Dropzone & PDF Handling ---
+        // --- FULL MULTI-PAGE PDF HANDLING ---
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
         let pdfDoc = null;
@@ -445,7 +476,6 @@
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const fileInput = document.getElementById('hidden-pdf-upload');
 
-        // Connect the toolbar upload button to the hidden input
         document.getElementById('tool-upload').addEventListener('click', () => fileInput.click());
         dropzone.addEventListener('click', () => fileInput.click());
         
@@ -460,26 +490,57 @@
             const fileReader = new FileReader();
             fileReader.onload = function() {
                 const typedarray = new Uint8Array(this.result);
-                pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                pdfjsLib.getDocument(typedarray).promise.then(async pdf => {
                     pdfDoc = pdf;
-                    pdfDoc.getPage(1).then(async page => {
+                    extractedPdfText = ""; 
+                    
+                    let totalHeight = 0;
+                    let maxWidth = 0;
+                    const pagesData = [];
+
+                    // Step 1: Calculate the full dimensions needed for all pages combined
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
                         const viewport = page.getViewport({ scale: 1.5 });
-                        pdfCanvas.height = viewport.height; pdfCanvas.width = viewport.width;
-                        annoCanvas.height = viewport.height; annoCanvas.width = viewport.width;
-                        await page.render({ canvasContext: pdfCtx, viewport: viewport }).promise;
+                        pagesData.push({ page, viewport });
+                        totalHeight += viewport.height;
+                        if (viewport.width > maxWidth) maxWidth = viewport.width;
+                    }
+
+                    // Step 2: Resize the main canvases to fit everything
+                    pdfCanvas.width = maxWidth;
+                    pdfCanvas.height = totalHeight;
+                    annoCanvas.width = maxWidth;
+                    annoCanvas.height = totalHeight;
+
+                    // Step 3: Draw each page onto the big canvas, stacked vertically
+                    let currentY = 0;
+                    for (let i = 0; i < pagesData.length; i++) {
+                        const { page, viewport } = pagesData[i];
                         
+                        // We use a temporary hidden canvas to render the page, then paste it onto the main one
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = viewport.width;
+                        tempCanvas.height = viewport.height;
+                        const tempCtx = tempCanvas.getContext('2d');
+
+                        await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
+                        pdfCtx.drawImage(tempCanvas, 0, currentY);
+                        currentY += viewport.height;
+
+                        // Step 4: Grab the text from this page for the AI to read
                         const textContent = await page.getTextContent();
-                        extractedPdfText = textContent.items.map(item => item.str).join(" ");
-                        
-                        dropzone.style.display = 'none';
-                        canvasWrapper.style.display = 'block';
-                    });
+                        extractedPdfText += textContent.items.map(item => item.str).join(" ") + " ";
+                    }
+                    
+                    dropzone.style.display = 'none';
+                    canvasWrapper.style.display = 'block';
                 });
             };
             fileReader.readAsArrayBuffer(file);
         }
 
-        // --- Toolbar Logic & Clear Button ---
+        // --- Custom Clear Modal Logic ---
         const tools = { 'tool-pen': 'pen', 'tool-highlighter': 'highlighter', 'tool-eraser': 'eraser' };
         for (const [id, toolName] of Object.entries(tools)) {
             document.getElementById(id).addEventListener('click', (e) => {
@@ -489,10 +550,18 @@
             });
         }
 
-        // Clear Workspace Function
-        document.getElementById('tool-clear').addEventListener('click', async () => {
-            if(!confirm("Are you sure you want to clear all drawings and remove this PDF?")) return;
-            
+        const confirmModal = document.getElementById('confirm-modal');
+        
+        document.getElementById('tool-clear').addEventListener('click', () => {
+            confirmModal.style.display = 'flex';
+        });
+
+        document.getElementById('btn-cancel-clear').addEventListener('click', () => {
+            confirmModal.style.display = 'none';
+        });
+
+        document.getElementById('btn-confirm-clear').addEventListener('click', async () => {
+            confirmModal.style.display = 'none';
             canvasWrapper.style.display = 'none';
             dropzone.style.display = 'flex';
             extractedPdfText = "";
@@ -527,6 +596,11 @@
             thinkingMsg.className = "ai-msg system";
             thinkingMsg.innerText = "Analyzing document...";
             chatBox.appendChild(thinkingMsg);
+
+            if(GEMINI_API_KEY === "PUT_YOUR_NEW_AIZA_KEY_HERE" || !GEMINI_API_KEY || GEMINI_API_KEY.startsWith("AQ.")) {
+                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it should start with 'AIza...') into the code at line 429! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
+                return;
+            }
 
             const promptContext = extractedPdfText ? `Here is the text extracted from the student's current lab document: "${extractedPdfText.substring(0, 5000)}". ` : `No document is currently loaded on the screen. `;
             const finalPrompt = `You are an expert, helpful university lab assistant. ${promptContext} The student asks: "${text}". Answer concisely and helpfully.`;
