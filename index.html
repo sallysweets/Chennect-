@@ -10,7 +10,7 @@
             --primary: #8C1D40; 
             --secondary: #FFC627; 
             
-            /* Theme Variables (Defaults to Dark Mode) */
+            /* Theme Variables */
             --bg-color: #000000;
             --text-color: #F5F5F7;
             --text-muted: #86868b;
@@ -105,16 +105,15 @@
 
         #workspace-container { flex: 1; overflow: auto; display: flex; justify-content: center; padding: 40px 2rem 150px; position: relative; }
         
-        /* Sleek Dropzone UI */
         #dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; height: 350px; margin: auto; border: 2px dashed var(--text-muted); border-radius: 24px; background: transparent; color: var(--text-muted); text-align: center; transition: all 0.3s ease; cursor: pointer; }
         #dropzone:hover, #dropzone.dragover { border-color: var(--primary); background: rgba(140, 29, 64, 0.05); color: var(--text-color); }
         #dropzone svg { width: 48px; height: 48px; margin-bottom: 15px; color: var(--primary); }
         
         #hidden-pdf-upload { display: none; }
 
-        /* Hidden Canvas until loaded - Crucial: touch-action none for Apple Pencil support */
-        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; margin-bottom: 50px; touch-action: none; }
-        #pdf-render { display: block; background: white; border-radius: 8px; }
+        /* Crucial: touch-action none for Apple Pencil / Palm rejection support */
+        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; margin-bottom: 50px; touch-action: none; background: white; }
+        #pdf-render { display: block; border-radius: 8px; }
         #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; }
         #cursors-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 
@@ -132,7 +131,6 @@
         .tool-btn:hover:not(.active) { background: rgba(255, 255, 255, 0.1); }
         .divider { width: 1px; height: 25px; background: var(--border-color); margin: 0 2px; }
         
-        /* Advanced Style Controls */
         .color-btn { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.1s; display: inline-block; }
         .color-btn.active { border-color: var(--text-color); transform: scale(1.15); box-shadow: inset 0 0 0 2px var(--bg-color); }
         .custom-color-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: conic-gradient(red, yellow, green, cyan, blue, magenta, red); cursor: pointer; padding: 2px; }
@@ -172,9 +170,11 @@
         <nav class="navbar">
             <div class="nav-brand">Chennect</div>
             <div class="nav-controls">
-                <button id="btn-theme-toggle" class="btn-pill" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color);">
-                    <svg id="icon-theme" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                    <span id="text-theme">Light Mode</span>
+                <button class="btn-pill btn-theme-toggle" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color);">
+                    <span class="icon-theme" style="display: flex;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </span>
+                    <span class="text-theme">Light Mode</span>
                 </button>
                 <button id="btn-nav-login" class="btn-pill">Log In</button>
             </div>
@@ -207,15 +207,18 @@
         </section>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Auth Modal - Fully hardcoded against browser Autofill -->
     <div id="auth-modal">
         <div class="auth-box">
             <h2 id="auth-title">Create Account</h2>
             <div id="auth-error"></div>
-            <!-- autocomplete="off" strictly blocks the browser from saving these -->
-            <form onsubmit="event.preventDefault();">
-                <input type="text" id="auth-name" placeholder="Full Legal Name" autocomplete="off" />
-                <input type="email" id="auth-email" placeholder="University Email" autocomplete="off" />
+            <form autocomplete="off" onsubmit="event.preventDefault();">
+                <!-- Hidden inputs to trick Chrome's password manager -->
+                <input style="display:none" type="text" name="fakeusernameremembered"/>
+                <input style="display:none" type="password" name="fakepasswordremembered"/>
+                
+                <input type="text" id="auth-name" placeholder="Full Legal Name" autocomplete="new-password" />
+                <input type="email" id="auth-email" placeholder="University Email" autocomplete="new-password" />
                 <div class="pw-wrapper">
                     <input type="password" id="auth-password" placeholder="Password" autocomplete="new-password" />
                     <button type="button" class="pw-toggle" id="btn-pw-toggle" aria-label="Show password">
@@ -249,6 +252,12 @@
         <header class="app-header">
             <h1 class="nav-brand" style="margin:0;">Chennect Workspace</h1>
             <div class="app-controls">
+                <button class="btn-pill btn-theme-toggle" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-color);">
+                    <span class="icon-theme" style="display: flex;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </span>
+                    <span class="text-theme">Light Mode</span>
+                </button>
                 <span id="user-display-name" style="font-weight: 600; margin-right: 15px;"></span>
                 <button id="btn-evaluate">PerChentage Score</button>
                 <button class="logout-btn" id="btn-logout">Sign Out</button>
@@ -269,7 +278,7 @@
             </div>
         </div>
 
-        <!-- Advanced Toolbar with Colors, Undo & Mass Erase -->
+        <!-- Fully Upgraded Notability-Style Toolbar -->
         <div class="toolbar">
             <div class="tool-group">
                 <button class="tool-btn active" id="tool-pen" title="Pen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></button>
@@ -279,15 +288,14 @@
             
             <div class="divider"></div>
             
-            <!-- Undo & Clear Ink Tools -->
             <div class="tool-group">
                 <button class="tool-btn" id="tool-undo" title="Undo Last Stroke"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg></button>
-                <button class="tool-btn" id="tool-clear-ink" title="Clear All Drawings (Keep PDF)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5.25 5.25c.75.75 2 .75 2.75 0l12-12-5.5-5.5-12 12A2.12 2.12 0 0 0 2 12z"></path><path d="M22 22H2"></path><line x1="18" y1="2" x2="22" y2="6"></line></svg></button>
+                <button class="tool-btn" id="tool-clear-ink" title="Clear All Ink"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5.25 5.25c.75.75 2 .75 2.75 0l12-12-5.5-5.5-12 12A2.12 2.12 0 0 0 2 12z"></path><path d="M22 22H2"></path><line x1="18" y1="2" x2="22" y2="6"></line></svg></button>
+                <button class="tool-btn" id="tool-add-page" title="Add Blank Scratch Paper"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg></button>
             </div>
 
             <div class="divider"></div>
             
-            <!-- Color Palette & Thickness -->
             <div class="tool-group" id="color-palette">
                 <div class="color-btn active" data-color="#111827" style="background: #111827;"></div>
                 <div class="color-btn" data-color="#ef4444" style="background: #ef4444;"></div>
@@ -344,7 +352,7 @@
         };
 
         // --- 2. GEMINI AI API KEY ---
-        // 🚨 Paste your NEW AIza... key from aistudio.google.com here 🚨
+        // 🚨 Paste your valid AIza... key from aistudio.google.com here 🚨
         const GEMINI_API_KEY = "PUT_YOUR_NEW_AIZA_KEY_HERE";
 
         const app = initializeApp(firebaseConfig);
@@ -358,16 +366,18 @@
         let extractedPdfText = ""; 
 
         // --- SVGs for UI Toggles ---
-        const svgSun = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
-        const svgMoon = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+        const svgSun = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+        const svgMoon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
         const svgEyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
         const svgEyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
-        document.getElementById('btn-theme-toggle').addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('text-theme').innerText = isLight ? 'Dark Mode' : 'Light Mode';
-            document.getElementById('icon-theme').innerHTML = isLight ? svgMoon : svgSun;
+        document.querySelectorAll('.btn-theme-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                document.querySelectorAll('.text-theme').forEach(el => el.innerText = isLight ? 'Dark Mode' : 'Light Mode');
+                document.querySelectorAll('.icon-theme').forEach(el => el.innerHTML = isLight ? svgMoon : svgSun);
+            });
         });
 
         // --- Auto-Logout Timers ---
@@ -405,7 +415,7 @@
             document.getElementById('auth-modal').style.display = 'flex';
             document.getElementById('auth-error').style.display = 'none';
             
-            // Wipe forms clean to stop autofill ghosting
+            // Hard wipe forms clean to stop autofill ghosting
             document.getElementById('auth-name').value = '';
             document.getElementById('auth-email').value = '';
             document.getElementById('auth-password').value = '';
@@ -579,7 +589,7 @@
         const tools = { 'tool-pen': 'pen', 'tool-highlighter': 'highlighter', 'tool-eraser': 'eraser' };
         for (const [id, toolName] of Object.entries(tools)) {
             document.getElementById(id).addEventListener('click', (e) => {
-                document.querySelectorAll('.tool-btn:not(#tool-undo):not(#tool-clear-ink):not(#tool-upload):not(#tool-clear):not(#tool-ai)').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tool-btn:not(#tool-undo):not(#tool-clear-ink):not(#tool-add-page):not(#tool-upload):not(#tool-clear):not(#tool-ai)').forEach(btn => btn.classList.remove('active'));
                 e.currentTarget.classList.add('active');
                 activeTool = toolName;
             });
@@ -606,6 +616,40 @@
             currentThickness = parseInt(e.target.value);
         });
 
+        // --- Add Scratch Paper Function ---
+        document.getElementById('tool-add-page').addEventListener('click', () => {
+            if (!pdfDoc) return;
+            const extraHeight = 1000;
+            
+            // Save current pdf canvas
+            const oldPdf = document.createElement('canvas');
+            oldPdf.width = pdfCanvas.width;
+            oldPdf.height = pdfCanvas.height;
+            oldPdf.getContext('2d').drawImage(pdfCanvas, 0, 0);
+            
+            const newHeight = pdfCanvas.height + extraHeight;
+            pdfCanvas.height = newHeight;
+            annoCanvas.height = newHeight;
+            
+            // Redraw old pdf
+            pdfCtx.drawImage(oldPdf, 0, 0);
+            
+            // Draw new blank white page
+            pdfCtx.fillStyle = "white";
+            pdfCtx.fillRect(0, newHeight - extraHeight, pdfCanvas.width, extraHeight);
+            
+            // Draw a subtle divider line to show where the original PDF ends
+            pdfCtx.strokeStyle = "#e5e7eb";
+            pdfCtx.lineWidth = 4;
+            pdfCtx.beginPath();
+            pdfCtx.moveTo(0, newHeight - extraHeight);
+            pdfCtx.lineTo(pdfCanvas.width, newHeight - extraHeight);
+            pdfCtx.stroke();
+            
+            // Force redraw of strokes onto newly resized canvas
+            renderAllStrokes();
+        });
+
         // --- Custom Clear Modals & Actions ---
         const confirmModal = document.getElementById('confirm-modal');
         const confirmTitle = document.getElementById('confirm-title');
@@ -613,7 +657,6 @@
         const confirmBtn = document.getElementById('btn-confirm-clear');
         let currentConfirmAction = null;
 
-        // "Clear Workspace" Button
         document.getElementById('tool-clear').addEventListener('click', () => { 
             confirmTitle.innerText = "Clear Workspace?";
             confirmDesc.innerText = "Are you sure you want to clear all drawings and completely remove this PDF? This action cannot be undone.";
@@ -622,7 +665,6 @@
             confirmModal.style.display = 'flex'; 
         });
 
-        // "Mass Eraser / Clear Ink" Button
         document.getElementById('tool-clear-ink').addEventListener('click', () => { 
             confirmTitle.innerText = "Erase All Drawings?";
             confirmDesc.innerText = "Are you sure you want to permanently erase all ink from this document? The PDF itself will remain.";
@@ -646,21 +688,19 @@
                 fileInput.value = "";
             }
             
-            // Both actions require wiping the database strokes
+            // Using a loop instead of a Batch to bypass Firebase's 500 document limit that caused ghost strokes!
             try {
                 const querySnapshot = await getDocs(strokesRef);
-                const batch = writeBatch(db);
-                querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-                await batch.commit();
+                const deletePromises = [];
+                querySnapshot.docs.forEach((doc) => deletePromises.push(deleteDoc(doc.ref)));
+                await Promise.all(deletePromises);
             } catch(e) { console.error("Error clearing DB:", e); }
             
             currentConfirmAction = null;
         });
 
-        // "Undo" Button
         document.getElementById('tool-undo').addEventListener('click', async () => {
             if (!currentUser) return;
-            // Find the absolute last stroke made by this exact user
             const myStrokes = contributionLog.filter(log => log.userId === currentUser.id);
             if (myStrokes.length > 0) {
                 const lastStroke = myStrokes[myStrokes.length - 1];
@@ -693,7 +733,7 @@
             chatBox.appendChild(thinkingMsg);
 
             if(GEMINI_API_KEY === "PUT_YOUR_NEW_AIZA_KEY_HERE" || !GEMINI_API_KEY || !GEMINI_API_KEY.startsWith("AIza")) {
-                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it should start with 'AIza...') into the code at Line 493! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
+                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it MUST start with 'AIza...') into the code at Line 507! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
                 return;
             }
 
@@ -720,8 +760,6 @@
 
         // --- APPLE PENCIL / POINTER EVENTS LOGIC ---
         let isDrawing = false, currentStroke = [], lastCursorUpdate = 0;
-        
-        // This array keeps track of local strokes and their document IDs for the Undo feature
         const contributionLog = []; 
 
         annoCanvas.addEventListener('pointerdown', (e) => {
@@ -747,13 +785,14 @@
             if (!isDrawing) return;
             isDrawing = false;
             if (currentStroke.length > 0) {
+                const strokeToSave = [...currentStroke];
                 addDoc(strokesRef, {
                     userId: currentUser.id, userName: currentUser.name,
                     cursorColor: currentUser.color, 
                     color: currentDrawColor, 
                     thickness: currentThickness, 
                     tool: activeTool,
-                    points: currentStroke, timestamp: new Date().toISOString()
+                    points: strokeToSave, timestamp: new Date().toISOString()
                 });
             }
         }
@@ -806,26 +845,30 @@
             }
         }
 
+        // Global re-render function so the "Scratch Paper" knows how to draw old strokes
+        window.renderAllStrokes = function() {
+            annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
+            contributionLog.forEach((data) => {
+                const points = data.points;
+                if (points && points.length > 0) {
+                    applyToolSettings(annoCtx, data.tool, data.color, data.thickness);
+                    annoCtx.beginPath();
+                    annoCtx.moveTo(points[0].x, points[0].y);
+                    for (let i = 1; i < points.length; i++) { annoCtx.lineTo(points[i].x, points[i].y); }
+                    annoCtx.stroke();
+                }
+            });
+        }
+
         function startDatabaseListeners() {
             unsubscribeStrokes = onSnapshot(strokesRef, (snapshot) => {
-                annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
                 contributionLog.length = 0; 
                 const strokes = [];
-                // Save the Firebase document ID so the Undo button knows exactly what to delete
                 snapshot.forEach(doc => strokes.push({ docId: doc.id, ...doc.data() }));
                 strokes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-                strokes.forEach((data) => {
-                    contributionLog.push(data); 
-                    const points = data.points;
-                    if (points && points.length > 0) {
-                        applyToolSettings(annoCtx, data.tool, data.color, data.thickness);
-                        annoCtx.beginPath();
-                        annoCtx.moveTo(points[0].x, points[0].y);
-                        for (let i = 1; i < points.length; i++) { annoCtx.lineTo(points[i].x, points[i].y); }
-                        annoCtx.stroke();
-                    }
-                });
+                strokes.forEach((data) => { contributionLog.push(data); });
+                window.renderAllStrokes();
             });
 
             const cursorsLayer = document.getElementById('cursors-layer');
