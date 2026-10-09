@@ -111,7 +111,6 @@
         
         #hidden-pdf-upload { display: none; }
 
-        /* Crucial: touch-action none for Apple Pencil / Palm rejection support */
         #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; margin-bottom: 50px; touch-action: none; background: white; }
         #pdf-render { display: block; border-radius: 8px; }
         #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; }
@@ -415,7 +414,6 @@
             document.getElementById('auth-modal').style.display = 'flex';
             document.getElementById('auth-error').style.display = 'none';
             
-            // Hard wipe forms clean to stop autofill ghosting
             document.getElementById('auth-name').value = '';
             document.getElementById('auth-email').value = '';
             document.getElementById('auth-password').value = '';
@@ -580,6 +578,11 @@
                     
                     dropzone.style.display = 'none';
                     canvasWrapper.style.display = 'block';
+
+                    // VERY IMPORTANT: Redraw database strokes onto the newly resized canvas instantly!
+                    if (typeof window.renderAllStrokes === 'function') {
+                        window.renderAllStrokes();
+                    }
                 });
             };
             fileReader.readAsArrayBuffer(file);
@@ -618,36 +621,38 @@
 
         // --- Add Scratch Paper Function ---
         document.getElementById('tool-add-page').addEventListener('click', () => {
-            if (!pdfDoc) return;
+            if (!pdfDoc && canvasWrapper.style.display === 'none') return;
             const extraHeight = 1000;
             
-            // Save current pdf canvas
             const oldPdf = document.createElement('canvas');
-            oldPdf.width = pdfCanvas.width;
-            oldPdf.height = pdfCanvas.height;
-            oldPdf.getContext('2d').drawImage(pdfCanvas, 0, 0);
+            oldPdf.width = pdfCanvas.width || 800; // fallback width if no pdf loaded
+            oldPdf.height = pdfCanvas.height || 0;
+            if(pdfCanvas.height > 0) oldPdf.getContext('2d').drawImage(pdfCanvas, 0, 0);
             
-            const newHeight = pdfCanvas.height + extraHeight;
+            const newHeight = (pdfCanvas.height || 0) + extraHeight;
+            const newWidth = pdfCanvas.width || 800;
+            
+            pdfCanvas.width = newWidth;
             pdfCanvas.height = newHeight;
+            annoCanvas.width = newWidth;
             annoCanvas.height = newHeight;
             
-            // Redraw old pdf
-            pdfCtx.drawImage(oldPdf, 0, 0);
+            if(oldPdf.height > 0) pdfCtx.drawImage(oldPdf, 0, 0);
             
-            // Draw new blank white page
             pdfCtx.fillStyle = "white";
-            pdfCtx.fillRect(0, newHeight - extraHeight, pdfCanvas.width, extraHeight);
+            pdfCtx.fillRect(0, newHeight - extraHeight, newWidth, extraHeight);
             
-            // Draw a subtle divider line to show where the original PDF ends
             pdfCtx.strokeStyle = "#e5e7eb";
             pdfCtx.lineWidth = 4;
             pdfCtx.beginPath();
             pdfCtx.moveTo(0, newHeight - extraHeight);
-            pdfCtx.lineTo(pdfCanvas.width, newHeight - extraHeight);
+            pdfCtx.lineTo(newWidth, newHeight - extraHeight);
             pdfCtx.stroke();
             
-            // Force redraw of strokes onto newly resized canvas
-            renderAllStrokes();
+            dropzone.style.display = 'none';
+            canvasWrapper.style.display = 'block';
+
+            if (typeof window.renderAllStrokes === 'function') window.renderAllStrokes();
         });
 
         // --- Custom Clear Modals & Actions ---
@@ -686,9 +691,9 @@
                 dropzone.style.display = 'flex';
                 extractedPdfText = "";
                 fileInput.value = "";
+                pdfCanvas.height = 0;
             }
             
-            // Using a loop instead of a Batch to bypass Firebase's 500 document limit that caused ghost strokes!
             try {
                 const querySnapshot = await getDocs(strokesRef);
                 const deletePromises = [];
@@ -733,7 +738,7 @@
             chatBox.appendChild(thinkingMsg);
 
             if(GEMINI_API_KEY === "PUT_YOUR_NEW_AIZA_KEY_HERE" || !GEMINI_API_KEY || !GEMINI_API_KEY.startsWith("AIza")) {
-                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it MUST start with 'AIza...') into the code at Line 507! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
+                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it MUST start with 'AIza...') into the code at Line 512! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
                 return;
             }
 
@@ -845,7 +850,6 @@
             }
         }
 
-        // Global re-render function so the "Scratch Paper" knows how to draw old strokes
         window.renderAllStrokes = function() {
             annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
             contributionLog.forEach((data) => {
@@ -868,7 +872,7 @@
                 strokes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
                 strokes.forEach((data) => { contributionLog.push(data); });
-                window.renderAllStrokes();
+                if (typeof window.renderAllStrokes === 'function') window.renderAllStrokes();
             });
 
             const cursorsLayer = document.getElementById('cursors-layer');
