@@ -9,6 +9,8 @@
         :root {
             --primary: #8C1D40; 
             --secondary: #FFC627; 
+            
+            /* Theme Variables (Defaults to Dark Mode) */
             --bg-color: #000000;
             --text-color: #F5F5F7;
             --text-muted: #86868b;
@@ -50,10 +52,12 @@
         .btn-pill:hover { transform: scale(1.02); opacity: 0.9; }
         .btn-pill-primary { background: linear-gradient(135deg, var(--primary), #b32551); color: white; padding: 16px 32px; font-size: 1.1rem; border-radius: 980px; border: none; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
         .btn-pill-primary:hover { transform: scale(1.03); }
+        
         .hero { padding: 10rem 5% 6rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
         .hero h1 { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.05; letter-spacing: -0.04em; background: var(--heading-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .hero p { font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-muted); max-width: 600px; margin: 0 auto 2.5rem; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; }
         .hero-actions { animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; }
+        
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 2rem 5% 6rem; max-width: 1200px; margin: 0 auto; }
         .bento-card { padding: 2.5rem; border-radius: 24px; background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); transition: transform 0.3s ease, background 0.4s ease; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0; }
         .bento-card:hover { transform: translateY(-5px); }
@@ -80,45 +84,55 @@
         .toggle-auth:hover { color: var(--primary); }
 
         /* --- MAIN APP WORKSPACE --- */
-        #app-workspace { display: none; height: 100vh; flex-direction: column; overflow: hidden; position: relative; }
-        .app-header { background: var(--box-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; }
+        #app-workspace { display: none; height: 100vh; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-color); }
+        .app-header { background: var(--box-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .app-controls { display: flex; gap: 10px; align-items: center; }
-        .logout-btn { background: rgba(140, 29, 64, 0.1); color: var(--primary); border: none; padding: 8px 16px; border-radius: 980px; font-weight: 600; cursor: pointer; }
-        #btn-evaluate { background: linear-gradient(135deg, var(--secondary), #d9a51c); color: #111; border: none; padding: 8px 16px; border-radius: 980px; font-weight: 700; cursor: pointer; display: none; }
+        .logout-btn { background: rgba(140, 29, 64, 0.1); color: var(--primary); border: none; padding: 8px 16px; border-radius: 980px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .logout-btn:hover { background: rgba(140, 29, 64, 0.2); }
+        #btn-evaluate { background: linear-gradient(135deg, var(--secondary), #d9a51c); color: #111; border: none; padding: 8px 16px; border-radius: 980px; font-weight: 700; cursor: pointer; display: none; transition: transform 0.2s; }
+        #btn-evaluate:hover { transform: scale(1.02); }
 
         #workspace-container { flex: 1; overflow: auto; display: flex; justify-content: center; padding: 40px 2rem 100px; position: relative; }
         
-        /* Dropzone UI */
+        /* Sleek Dropzone UI */
         #dropzone {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; max-width: 600px; height: 300px; margin: auto;
-            border: 2px dashed var(--border-color); border-radius: 24px;
-            background: var(--box-bg); color: var(--text-muted); text-align: center;
+            width: 100%; max-width: 600px; height: 350px; margin: auto;
+            border: 2px dashed var(--text-muted); border-radius: 24px;
+            background: transparent; color: var(--text-muted); text-align: center;
             transition: all 0.3s ease; cursor: pointer;
         }
         #dropzone:hover, #dropzone.dragover { border-color: var(--primary); background: rgba(140, 29, 64, 0.05); color: var(--text-color); }
         #dropzone svg { width: 48px; height: 48px; margin-bottom: 15px; color: var(--primary); }
+        
+        /* Hidden input */
+        #hidden-pdf-upload { display: none; }
 
-        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-radius: 8px; display: none; }
+        /* Hidden Canvas until loaded */
+        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; }
         #pdf-render { display: block; background: white; border-radius: 8px; }
         #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; }
         #cursors-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 
         /* --- TOOLBAR --- */
-        .toolbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--box-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 24px; border-radius: 980px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; gap: 15px; align-items: center; border: 1px solid var(--border-color); z-index: 100; }
+        .toolbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--box-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 24px; border-radius: 980px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: flex; gap: 15px; align-items: center; border: 1px solid var(--border-color); z-index: 100; }
         .tool-btn { background: transparent; border: none; padding: 10px; border-radius: 50%; cursor: pointer; width: 48px; height: 48px; transition: 0.2s; display: flex; align-items: center; justify-content: center; color: var(--text-color); }
         .tool-btn.active { background: rgba(255, 198, 39, 0.2); box-shadow: inset 0 0 0 2px var(--secondary); color: var(--secondary); }
-        #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; margin-left: 5px; }
-        #tool-ai:hover { transform: scale(1.05); }
+        .tool-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        
         .divider { width: 1px; height: 25px; background: var(--border-color); margin: 0 5px; }
+        
+        #tool-upload { color: var(--primary); }
+        #tool-clear { color: #ef4444; }
+        #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; }
+        #tool-ai:hover { transform: scale(1.05); }
         
         .remote-cursor { position: absolute; transition: transform 0.1s linear; display: flex; align-items: flex-start; }
         .cursor-dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .cursor-name { background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 8px; font-weight: 500; }
 
-        #ai-report { display: none; position: fixed; top: 80px; right: 30px; background: var(--box-bg); color: var(--text-color); padding: 25px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 300px; border: 1px solid var(--border-color); border-left: 4px solid var(--secondary); z-index: 100; backdrop-filter: blur(20px); }
-
         /* --- AI PANEL --- */
+        #ai-report { display: none; position: fixed; top: 80px; right: 30px; background: var(--box-bg); color: var(--text-color); padding: 25px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 300px; border: 1px solid var(--border-color); border-left: 4px solid var(--secondary); z-index: 100; backdrop-filter: blur(20px); }
         #ai-panel { position: fixed; right: -100%; top: 80px; width: 350px; max-width: 90vw; height: calc(100vh - 120px); background: var(--box-bg); backdrop-filter: blur(30px); border-radius: 20px 0 0 20px; box-shadow: -10px 0 40px rgba(0,0,0,0.3); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; z-index: 90; border: 1px solid var(--border-color); color: var(--text-color); }
         #ai-panel.open { right: 0; }
         .ai-header { padding: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 20px 0 0 0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.01em; }
@@ -214,9 +228,12 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 <h2>Drag & Drop PDF here</h2>
                 <p>Or click to browse files</p>
-                <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;" />
             </div>
 
+            <!-- Hidden file input triggered by Dropzone or Toolbar -->
+            <input type="file" id="hidden-pdf-upload" accept="application/pdf" style="display: none;" />
+
+            <!-- The wrapper stays completely hidden until a file is loaded -->
             <div id="canvas-wrapper">
                 <canvas id="pdf-render"></canvas>
                 <canvas id="annotation-layer"></canvas>
@@ -224,14 +241,15 @@
             </div>
         </div>
 
+        <!-- Sleek Toolbar with SVG Icons -->
         <div class="toolbar">
             <button class="tool-btn active" id="tool-pen" title="Pen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></button>
             <button class="tool-btn" id="tool-highlighter" title="Highlighter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4-10 10H8v-4L18 2z"></path><path d="M8 12l4 4"></path><path d="M2 22l4-4"></path></svg></button>
             <button class="tool-btn" id="tool-eraser" title="Eraser"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4C13.5 3.5 14.5 3.5 15 4L20 9C20.5 9.5 20.5 10.5 20 11L11 20"></path><line x1="10" y1="11" x2="19" y2="20"></line></svg></button>
             <div class="divider"></div>
             
-            <!-- Clear Canvas Button -->
-            <button class="tool-btn" id="tool-clear" title="Clear Canvas & Reset" style="color: #ef4444;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+            <button class="tool-btn" id="tool-upload" title="Upload New PDF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
+            <button class="tool-btn" id="tool-clear" title="Clear Workspace"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
             
             <div class="divider"></div>
             <button class="tool-btn" id="tool-ai" title="Ask AI"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"></path></svg></button>
@@ -260,9 +278,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, getDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
         // --- 1. FIREBASE KEYS ---
+        // 🚨 Paste your exact keys here 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyBsSyI11CioU61G6ZES7Oqh6EFKOCW2whs",
             authDomain: "chennect-5ffef.firebaseapp.com",
@@ -273,16 +292,20 @@
         };
 
         // --- 2. GEMINI AI API KEY ---
-        // 🚨 Paste your key from aistudio.google.com inside the quotes below 🚨
+        // 🚨 Paste your key from aistudio.google.com here 🚨
         const GEMINI_API_KEY = "PUT_YOUR_GEMINI_KEY_HERE";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        
+        // Force Session Persistence: Logs user out if they close the tab or refresh
+        setPersistence(auth, browserSessionPersistence);
+        
         const strokesRef = collection(db, "workspaces/lab-1/strokes");
         const cursorsRef = collection(db, "workspaces/lab-1/cursors");
         
-        let extractedPdfText = ""; // Holds the text for the AI
+        let extractedPdfText = ""; 
 
         // --- SVGs for UI Toggles ---
         const svgSun = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
@@ -290,12 +313,36 @@
         const svgEyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
         const svgEyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
-        // --- Theme Toggle ---
         document.getElementById('btn-theme-toggle').addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
             document.getElementById('text-theme').innerText = isLight ? 'Dark Mode' : 'Light Mode';
             document.getElementById('icon-theme').innerHTML = isLight ? svgMoon : svgSun;
+        });
+
+        // --- Auto-Logout Timers & Unload Handlers ---
+        let inactivityTimer;
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (currentUser) {
+                // Signs user out after exactly 5 minutes of doing nothing
+                inactivityTimer = setTimeout(() => {
+                    signOut(auth);
+                    alert("You have been automatically signed out due to 5 minutes of inactivity.");
+                }, 5 * 60 * 1000); 
+            }
+        }
+        window.addEventListener('mousemove', resetInactivityTimer);
+        window.addEventListener('keydown', resetInactivityTimer);
+        window.addEventListener('mousedown', resetInactivityTimer);
+        window.addEventListener('touchstart', resetInactivityTimer);
+
+        // Forces logout and removes cursors if you close the tab or hit refresh
+        window.addEventListener('beforeunload', () => { 
+            if (currentUser) {
+                deleteDoc(doc(db, "workspaces/lab-1/cursors", currentUser.id));
+                signOut(auth); 
+            }
         });
 
         // --- Auth UI Logic ---
@@ -359,6 +406,7 @@
                     await setDoc(doc(db, "users", userCredential.user.uid), { name: name, role: role, color: randomColor });
                 }
                 document.getElementById('auth-modal').style.display = 'none';
+                resetInactivityTimer();
             } catch (error) { showAuthError(error.message); }
         });
 
@@ -374,6 +422,7 @@
                     document.getElementById('user-display-name').innerText = currentUser.name;
                     document.getElementById('btn-evaluate').style.display = (currentUser.role === "teacher") ? 'block' : 'none';
                     startDatabaseListeners();
+                    resetInactivityTimer();
                 }
             } else {
                 currentUser = null;
@@ -381,6 +430,7 @@
                 document.getElementById('app-workspace').style.display = 'none';
                 if(unsubscribeStrokes) unsubscribeStrokes();
                 if(unsubscribeCursors) unsubscribeCursors();
+                clearTimeout(inactivityTimer);
             }
         });
 
@@ -395,9 +445,12 @@
         
         const dropzone = document.getElementById('dropzone');
         const canvasWrapper = document.getElementById('canvas-wrapper');
-        const fileInput = document.getElementById('pdf-upload');
+        const fileInput = document.getElementById('hidden-pdf-upload');
 
+        // Connect the toolbar upload button to the hidden input
+        document.getElementById('tool-upload').addEventListener('click', () => fileInput.click());
         dropzone.addEventListener('click', () => fileInput.click());
+        
         dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
         dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
         dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); processFile(e.dataTransfer.files[0]); });
@@ -417,7 +470,6 @@
                         annoCanvas.height = viewport.height; annoCanvas.width = viewport.width;
                         await page.render({ canvasContext: pdfCtx, viewport: viewport }).promise;
                         
-                        // Extract text for AI
                         const textContent = await page.getTextContent();
                         extractedPdfText = textContent.items.map(item => item.str).join(" ");
                         
@@ -441,15 +493,13 @@
 
         // Clear Workspace Function
         document.getElementById('tool-clear').addEventListener('click', async () => {
-            if(!confirm("Clear all drawings and remove this PDF?")) return;
+            if(!confirm("Are you sure you want to clear all drawings and remove this PDF?")) return;
             
-            // 1. Hide Canvas, show dropzone
             canvasWrapper.style.display = 'none';
             dropzone.style.display = 'flex';
             extractedPdfText = "";
             fileInput.value = "";
             
-            // 2. Clear Database Strokes
             try {
                 const querySnapshot = await getDocs(strokesRef);
                 const batch = writeBatch(db);
@@ -480,13 +530,11 @@
             thinkingMsg.innerText = "Analyzing document...";
             chatBox.appendChild(thinkingMsg);
 
-            // If user forgot to add their key
             if(GEMINI_API_KEY === "PUT_YOUR_GEMINI_KEY_HERE" || !GEMINI_API_KEY) {
-                thinkingMsg.innerText = "⚠️ ERROR: You need to paste your free Gemini API key into the code at line 348 to use the real AI! Get it at aistudio.google.com";
+                thinkingMsg.innerText = "Error: You need to paste your free Gemini API key into the code at line 379 to use the real AI! Get it at aistudio.google.com";
                 return;
             }
 
-            // The Prompt sent to the LLM
             const promptContext = extractedPdfText ? `Here is the text extracted from the student's current lab document: "${extractedPdfText.substring(0, 5000)}". ` : `No document is currently loaded on the screen. `;
             const finalPrompt = `You are an expert, helpful university lab assistant. ${promptContext} The student asks: "${text}". Answer concisely and helpfully.`;
 
@@ -501,7 +549,7 @@
                 if(data.error) throw new Error(data.error.message);
                 
                 const aiReply = data.candidates[0].content.parts[0].text;
-                thinkingMsg.innerHTML = aiReply.replace(/\n/g, '<br>'); // Simple formatting
+                thinkingMsg.innerHTML = aiReply.replace(/\n/g, '<br>');
             } catch (error) {
                 thinkingMsg.innerText = "Error connecting to AI: " + error.message;
             }
@@ -568,8 +616,6 @@
                 ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 30; ctx.strokeStyle = 'rgba(0,0,0,1)';
             }
         }
-
-        window.addEventListener('beforeunload', () => { if (currentUser) deleteDoc(doc(db, "workspaces/lab-1/cursors", currentUser.id)); });
 
         function startDatabaseListeners() {
             unsubscribeStrokes = onSnapshot(strokesRef, (snapshot) => {
