@@ -14,152 +14,164 @@
             --bg-color: #000000;
             --text-color: #F5F5F7;
             --text-muted: #86868b;
-            --nav-bg: rgba(0, 0, 0, 0.7);
-            --box-bg: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(0, 0, 0, 0.75);
+            --box-bg: rgba(255, 255, 255, 0.08);
+            --border-color: rgba(255, 255, 255, 0.12);
             --input-bg: rgba(0, 0, 0, 0.5);
             --input-text: #ffffff;
             --heading-grad: linear-gradient(180deg, #ffffff 30%, #888888 100%);
-            --modal-overlay: rgba(0,0,0,0.8);
+            --modal-overlay: rgba(0,0,0,0.85);
+            --shadow-soft: 0 20px 40px -10px rgba(0,0,0,0.5);
         }
 
         body.light-mode {
             --bg-color: #F9FAFB;
             --text-color: #111827;
             --text-muted: #4b5563;
-            --nav-bg: rgba(255, 255, 255, 0.8);
+            --nav-bg: rgba(255, 255, 255, 0.85);
             --box-bg: #ffffff;
             --border-color: #e5e7eb;
-            --input-bg: #f9fafb;
+            --input-bg: #f3f4f6;
             --input-text: #111827;
             --heading-grad: linear-gradient(180deg, #111827 30%, #4b5563 100%);
-            --modal-overlay: rgba(255,255,255,0.6);
+            --modal-overlay: rgba(255,255,255,0.7);
+            --shadow-soft: 0 20px 40px -10px rgba(0,0,0,0.1);
         }
 
         body, html {
             margin: 0; padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             scroll-behavior: smooth; background: var(--bg-color); color: var(--text-color);
-            transition: background-color 0.4s ease, color 0.4s ease;
+            transition: background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.4s ease;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
+
+        /* Fluid UI Animations */
+        * { box-sizing: border-box; }
+        button, .bento-card, #dropzone { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
 
         /* --- LANDING PAGE --- */
         #marketing-site { display: block; min-height: 100vh; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: var(--nav-bg); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); transition: background-color 0.4s ease; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: var(--nav-bg); backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: blur(24px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
         .nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--text-color); letter-spacing: -0.5px; }
-        .nav-controls { display: flex; gap: 15px; align-items: center; }
-        .btn-pill { background: var(--text-color); color: var(--bg-color); border: none; padding: 10px 24px; border-radius: 980px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s, opacity 0.2s; display: flex; align-items: center; gap: 8px; }
-        .btn-pill:hover { transform: scale(1.02); opacity: 0.9; }
-        .btn-pill-primary { background: linear-gradient(135deg, var(--primary), #b32551); color: white; padding: 16px 32px; font-size: 1.1rem; border-radius: 980px; border: none; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
-        .btn-pill-primary:hover { transform: scale(1.03); }
+        .nav-controls { display: flex; gap: 12px; align-items: center; }
+        .btn-pill { background: var(--text-color); color: var(--bg-color); border: none; padding: 10px 24px; border-radius: 980px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-pill:hover { transform: scale(1.03); opacity: 0.95; }
+        .btn-pill-primary { background: linear-gradient(135deg, var(--primary), #b32551); color: white; padding: 16px 36px; font-size: 1.1rem; border-radius: 980px; border: none; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(140, 29, 64, 0.3); }
+        .btn-pill-primary:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 12px 25px rgba(140, 29, 64, 0.4); }
         
-        .hero { padding: 10rem 5% 6rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .hero h1 { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.05; letter-spacing: -0.04em; background: var(--heading-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .hero p { font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-muted); max-width: 600px; margin: 0 auto 2.5rem; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; }
-        .hero-actions { animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; }
+        .hero { padding: 9rem 5% 6rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .hero h1 { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.05; letter-spacing: -0.04em; background: var(--heading-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .hero p { font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-muted); max-width: 600px; margin: 0 auto 2.5rem; animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; opacity: 0; }
+        .hero-actions { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; opacity: 0; }
         
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 2rem 5% 6rem; max-width: 1200px; margin: 0 auto; }
-        .bento-card { padding: 2.5rem; border-radius: 24px; background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); transition: transform 0.3s ease, background 0.4s ease; animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0; }
-        .bento-card:hover { transform: translateY(-5px); }
+        .bento-card { padding: 2.5rem; border-radius: 28px; background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: var(--shadow-soft); animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards; opacity: 0; }
+        .bento-card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(255,255,255,0.2); }
         .bento-card h3 { color: var(--text-color); margin-top: 0; font-size: 1.5rem; letter-spacing: -0.02em; }
         .bento-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 0; }
-        .bento-icon { color: var(--primary); margin-bottom: 1rem; display: block; }
+        .bento-icon { color: var(--primary); margin-bottom: 1.2rem; display: block; }
 
-        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
 
-        /* --- AUTH MODAL --- */
-        #auth-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2000; justify-content: center; align-items: center; }
-        .auth-box { background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 3rem 2.5rem; border-radius: 24px; width: 90%; max-width: 380px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; color: var(--text-color); }
-        .auth-box h2 { margin-top: 0; margin-bottom: 1.5rem; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.02em; }
-        #auth-error { display: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px; text-align: left; line-height: 1.4; }
-        .auth-box input, .auth-box select { width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 12px; box-sizing: border-box; font-size: 1rem; background: var(--input-bg); color: var(--input-text); transition: border-color 0.2s; }
-        .auth-box input:focus, .auth-box select:focus { outline: none; border-color: var(--primary); }
+        /* --- MODALS --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 2500; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-box { background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); padding: 3rem 2.5rem; border-radius: 28px; width: 90%; max-width: 400px; box-shadow: var(--shadow-soft); text-align: center; color: var(--text-color); transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        
+        .modal-box h2 { margin-top: 0; margin-bottom: 1.5rem; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.02em; }
+        #auth-error { display: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 12px; border-radius: 12px; font-size: 0.95rem; margin-bottom: 15px; text-align: left; line-height: 1.4; }
+        .modal-box input, .modal-box select { width: 100%; padding: 14px 16px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 14px; font-size: 1rem; background: var(--input-bg); color: var(--input-text); transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
+        .modal-box input:focus, .modal-box select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(140, 29, 64, 0.2); }
         .pw-wrapper { position: relative; margin-bottom: 16px; }
         .pw-wrapper input { margin-bottom: 0; padding-right: 45px; }
         .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; padding: 4px; }
         .pw-toggle:hover { color: var(--text-color); }
-        .auth-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 980px; font-weight: 600; font-size: 1.1rem; cursor: pointer; margin-top: 5px; transition: transform 0.2s; }
+        .auth-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 980px; font-weight: 600; font-size: 1.1rem; cursor: pointer; margin-top: 5px; }
         .auth-btn:hover { transform: scale(1.02); }
         .toggle-auth { margin-top: 20px; font-size: 0.95rem; color: var(--text-muted); cursor: pointer; font-weight: 500; }
         .toggle-auth:hover { color: var(--primary); }
 
-        /* --- CUSTOM CONFIRM MODAL --- */
-        #confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2500; justify-content: center; align-items: center; }
-        .confirm-box { background: var(--box-bg); border: 1px solid var(--border-color); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 2.5rem; border-radius: 24px; width: 90%; max-width: 350px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; color: var(--text-color); }
-        .confirm-box h2 { margin-top: 0; font-size: 1.5rem; margin-bottom: 10px; }
-        .confirm-box p { color: var(--text-muted); margin-bottom: 25px; line-height: 1.4; font-size: 0.95rem; }
-        .confirm-actions { display: flex; gap: 10px; }
-        .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: var(--text-color); border: none; padding: 12px; border-radius: 980px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-cancel:hover { background: rgba(255,255,255,0.2); }
-        .btn-danger { flex: 1; background: #ef4444; color: white; border: none; padding: 12px; border-radius: 980px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-danger:hover { background: #dc2626; }
+        /* Confirm Modal specific */
+        .confirm-box { padding: 2.5rem; max-width: 360px; }
+        .confirm-box p { color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; font-size: 0.95rem; }
+        .confirm-actions { display: flex; gap: 12px; }
+        .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: var(--text-color); border: none; padding: 14px; border-radius: 980px; font-weight: 600; cursor: pointer; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.15); transform: scale(1.02); }
+        .btn-danger { flex: 1; background: #ef4444; color: white; border: none; padding: 14px; border-radius: 980px; font-weight: 600; cursor: pointer; }
+        .btn-danger:hover { background: #dc2626; transform: scale(1.02); }
 
         /* --- MAIN APP WORKSPACE --- */
         #app-workspace { display: none; height: 100vh; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-color); }
-        .app-header { background: var(--box-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .app-controls { display: flex; gap: 10px; align-items: center; }
-        .logout-btn { background: rgba(140, 29, 64, 0.1); color: var(--primary); border: none; padding: 8px 16px; border-radius: 980px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        .logout-btn:hover { background: rgba(140, 29, 64, 0.2); }
-        #btn-evaluate { background: linear-gradient(135deg, var(--secondary), #d9a51c); color: #111; border: none; padding: 8px 16px; border-radius: 980px; font-weight: 700; cursor: pointer; display: none; transition: transform 0.2s; }
-        #btn-evaluate:hover { transform: scale(1.02); }
+        .app-header { background: var(--box-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .app-controls { display: flex; gap: 12px; align-items: center; }
+        .logout-btn { background: rgba(140, 29, 64, 0.1); color: var(--primary); border: none; padding: 10px 20px; border-radius: 980px; font-weight: 600; cursor: pointer; }
+        .logout-btn:hover { background: rgba(140, 29, 64, 0.15); transform: scale(1.03); }
+        #btn-evaluate { background: linear-gradient(135deg, var(--secondary), #d9a51c); color: #111; border: none; padding: 10px 20px; border-radius: 980px; font-weight: 700; cursor: pointer; display: none; box-shadow: 0 4px 12px rgba(255, 198, 39, 0.2); }
+        #btn-evaluate:hover { transform: scale(1.03); }
 
-        #workspace-container { flex: 1; overflow: auto; display: flex; justify-content: center; padding: 40px 2rem 150px; position: relative; }
+        #workspace-container { flex: 1; overflow: auto; display: flex; justify-content: center; padding: 40px 2rem 150px; position: relative; scroll-behavior: smooth; }
         
-        #dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; height: 350px; margin: auto; border: 2px dashed var(--text-muted); border-radius: 24px; background: transparent; color: var(--text-muted); text-align: center; transition: all 0.3s ease; cursor: pointer; }
-        #dropzone:hover, #dropzone.dragover { border-color: var(--primary); background: rgba(140, 29, 64, 0.05); color: var(--text-color); }
+        #dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; height: 350px; margin: auto; border: 2px dashed var(--text-muted); border-radius: 28px; background: transparent; color: var(--text-muted); text-align: center; cursor: pointer; }
+        #dropzone:hover, #dropzone.dragover { border-color: var(--primary); background: rgba(140, 29, 64, 0.05); color: var(--text-color); transform: scale(1.01); }
         #dropzone svg { width: 48px; height: 48px; margin-bottom: 15px; color: var(--primary); }
         
         #hidden-pdf-upload { display: none; }
 
-        #canvas-wrapper { position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-radius: 8px; display: none; margin-bottom: 50px; touch-action: none; background: white; }
-        #pdf-render { display: block; border-radius: 8px; }
-        #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; }
-        #cursors-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        /* Hardware Acceleration for Canvas */
+        #canvas-wrapper { position: relative; box-shadow: var(--shadow-soft); border-radius: 12px; display: none; margin-bottom: 50px; touch-action: none; background: white; transform: translateZ(0); }
+        #pdf-render { display: block; border-radius: 12px; width: 100%; height: 100%; }
+        #annotation-layer { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; width: 100%; height: 100%; }
+        #cursors-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; transform: translateZ(0); }
 
         /* --- ADVANCED TOOLBAR --- */
         .toolbar { 
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            background: var(--box-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
-            padding: 10px 20px; border-radius: 980px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); 
+            background: var(--box-bg); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: blur(30px); 
+            padding: 12px 24px; border-radius: 980px; box-shadow: var(--shadow-soft); 
             display: flex; gap: 12px; align-items: center; border: 1px solid var(--border-color); z-index: 100;
             flex-wrap: wrap; justify-content: center; max-width: 95vw;
         }
         .tool-group { display: flex; align-items: center; gap: 8px; }
-        .tool-btn { background: transparent; border: none; padding: 10px; border-radius: 50%; cursor: pointer; width: 44px; height: 44px; transition: 0.2s; display: flex; align-items: center; justify-content: center; color: var(--text-color); }
-        .tool-btn.active { background: rgba(255, 198, 39, 0.2); box-shadow: inset 0 0 0 2px var(--secondary); color: var(--secondary); }
-        .tool-btn:hover:not(.active) { background: rgba(255, 255, 255, 0.1); }
-        .divider { width: 1px; height: 25px; background: var(--border-color); margin: 0 2px; }
+        .tool-btn { background: transparent; border: none; padding: 10px; border-radius: 50%; cursor: pointer; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; color: var(--text-color); }
+        .tool-btn.active { background: rgba(255, 198, 39, 0.2); box-shadow: inset 0 0 0 2px var(--secondary); color: var(--secondary); transform: scale(1.05); }
+        .tool-btn:hover:not(.active) { background: rgba(255, 255, 255, 0.1); transform: scale(1.05); }
+        .divider { width: 1px; height: 28px; background: var(--border-color); margin: 0 4px; }
         
-        .color-btn { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.1s; display: inline-block; }
-        .color-btn.active { border-color: var(--text-color); transform: scale(1.15); box-shadow: inset 0 0 0 2px var(--bg-color); }
-        .custom-color-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: conic-gradient(red, yellow, green, cyan, blue, magenta, red); cursor: pointer; padding: 2px; }
+        .color-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); display: inline-block; }
+        .color-btn.active { border-color: var(--text-color); transform: scale(1.2); box-shadow: inset 0 0 0 2px var(--bg-color); }
+        .custom-color-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(red, yellow, green, cyan, blue, magenta, red); cursor: pointer; padding: 2px; transition: transform 0.2s; }
+        .custom-color-wrapper:hover { transform: scale(1.1); }
         #custom-color-input { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
-        .thickness-slider { width: 70px; margin-left: 5px; accent-color: var(--primary); }
+        .thickness-slider { width: 80px; margin-left: 8px; accent-color: var(--primary); cursor: pointer; }
 
         #tool-upload { color: var(--primary); }
         #tool-clear { color: #ef4444; }
         #tool-clear-ink { color: #f97316; }
-        #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; }
-        #tool-ai:hover { transform: scale(1.05); }
+        #tool-ai { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        #tool-ai:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
         
-        .remote-cursor { position: absolute; transition: transform 0.05s linear; display: flex; align-items: flex-start; }
-        .cursor-dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .cursor-name { background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 8px; font-weight: 500; }
+        .remote-cursor { position: absolute; will-change: transform; transition: transform 0.08s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; align-items: flex-start; }
+        .cursor-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 2px solid white; }
+        .cursor-name { background: rgba(0,0,0,0.85); color: white; padding: 5px 10px; border-radius: 8px; font-size: 11px; margin-left: 8px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.2); backdrop-filter: blur(4px); }
 
         /* --- AI PANEL --- */
-        #ai-report { display: none; position: fixed; top: 80px; right: 30px; background: var(--box-bg); color: var(--text-color); padding: 25px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 300px; border: 1px solid var(--border-color); border-left: 4px solid var(--secondary); z-index: 100; backdrop-filter: blur(20px); }
-        #ai-panel { position: fixed; right: -100%; top: 80px; width: 350px; max-width: 90vw; height: calc(100vh - 120px); background: var(--box-bg); backdrop-filter: blur(30px); border-radius: 20px 0 0 20px; box-shadow: -10px 0 40px rgba(0,0,0,0.3); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; z-index: 90; border: 1px solid var(--border-color); color: var(--text-color); }
+        #ai-report { display: none; position: fixed; top: 80px; right: 30px; background: var(--box-bg); color: var(--text-color); padding: 25px; border-radius: 20px; box-shadow: var(--shadow-soft); max-width: 320px; border: 1px solid var(--border-color); border-left: 4px solid var(--secondary); z-index: 100; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }
+        #ai-panel { position: fixed; right: -100%; top: 80px; width: 380px; max-width: 90vw; height: calc(100vh - 120px); background: var(--box-bg); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border-radius: 24px 0 0 24px; box-shadow: -10px 0 50px rgba(0,0,0,0.4); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; z-index: 90; border: 1px solid var(--border-color); color: var(--text-color); }
         #ai-panel.open { right: 0; }
-        .ai-header { padding: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 20px 0 0 0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.01em; }
-        .ai-close { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .ai-chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; font-size: 0.95rem; }
-        .ai-msg { padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.5; }
+        .ai-header { padding: 20px 24px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border-radius: 24px 0 0 0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.01em; }
+        .ai-close { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .ai-close:hover { transform: scale(1.1) rotate(90deg); }
+        .ai-chat { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; font-size: 0.95rem; scroll-behavior: smooth; }
+        .ai-msg { padding: 14px 18px; border-radius: 18px; max-width: 85%; line-height: 1.5; animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .ai-msg.system { background: rgba(134, 134, 139, 0.15); align-self: flex-start; border-bottom-left-radius: 4px; }
-        .ai-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .ai-input-area { padding: 15px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background: transparent; }
-        .ai-input-area input { flex: 1; padding: 12px 16px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--input-text); border-radius: 980px; outline: none; font-size: 0.95rem; }
+        .ai-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 12px rgba(140, 29, 64, 0.2); }
+        .ai-input-area { padding: 16px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background: transparent; }
+        .ai-input-area input { flex: 1; padding: 14px 18px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--input-text); border-radius: 980px; outline: none; font-size: 0.95rem; transition: border-color 0.2s; }
         .ai-input-area input:focus { border-color: #6366f1; }
-        .ai-input-area button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 980px; cursor: pointer; font-weight: 600; }
+        .ai-input-area button { background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 980px; cursor: pointer; font-weight: 600; transition: transform 0.2s; }
+        .ai-input-area button:hover { transform: scale(1.05); }
         svg { display: block; }
     </style>
 </head>
@@ -206,13 +218,12 @@
         </section>
     </div>
 
-    <!-- Auth Modal - Fully hardcoded against browser Autofill -->
-    <div id="auth-modal">
-        <div class="auth-box">
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-box">
             <h2 id="auth-title">Create Account</h2>
             <div id="auth-error"></div>
             <form autocomplete="off" onsubmit="event.preventDefault();">
-                <!-- Hidden inputs to trick Chrome's password manager -->
                 <input style="display:none" type="text" name="fakeusernameremembered"/>
                 <input style="display:none" type="password" name="fakepasswordremembered"/>
                 
@@ -235,8 +246,8 @@
     </div>
 
     <!-- Custom In-App Confirm Modal -->
-    <div id="confirm-modal">
-        <div class="confirm-box">
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box confirm-box">
             <h2 id="confirm-title">Clear Workspace?</h2>
             <p id="confirm-desc">Are you sure you want to clear all drawings and remove this PDF? This action cannot be undone.</p>
             <div class="confirm-actions">
@@ -277,7 +288,7 @@
             </div>
         </div>
 
-        <!-- Fully Upgraded Notability-Style Toolbar -->
+        <!-- Advanced Toolbar -->
         <div class="toolbar">
             <div class="tool-group">
                 <button class="tool-btn active" id="tool-pen" title="Pen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></button>
@@ -364,7 +375,7 @@
         
         let extractedPdfText = ""; 
 
-        // --- SVGs for UI Toggles ---
+        // --- SVGs & Theme Toggles ---
         const svgSun = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
         const svgMoon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
         const svgEyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
@@ -379,7 +390,6 @@
             });
         });
 
-        // --- Auto-Logout Timers ---
         let inactivityTimer;
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer);
@@ -411,13 +421,15 @@
         let isLoginMode = false;
         
         function openAuthModal(mode) {
-            document.getElementById('auth-modal').style.display = 'flex';
+            const modal = document.getElementById('auth-modal');
             document.getElementById('auth-error').style.display = 'none';
-            
             document.getElementById('auth-name').value = '';
             document.getElementById('auth-email').value = '';
             document.getElementById('auth-password').value = '';
-
+            
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+            
             isLoginMode = (mode === 'login');
             updateAuthUI();
         }
@@ -436,7 +448,14 @@
             });
         });
 
-        window.onclick = function(event) { if (event.target == document.getElementById('auth-modal')) document.getElementById('auth-modal').style.display = "none"; }
+        window.onclick = function(event) { 
+            const authModal = document.getElementById('auth-modal');
+            if (event.target == authModal) {
+                authModal.classList.remove('active');
+                setTimeout(() => authModal.style.display = "none", 300);
+            }
+        }
+        
         document.getElementById('btn-auth-toggle').addEventListener('click', () => { 
             isLoginMode = !isLoginMode; 
             document.getElementById('auth-error').style.display = 'none'; 
@@ -482,7 +501,9 @@
                     const cursorColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
                     await setDoc(doc(db, "users", userCredential.user.uid), { name: name, role: role, color: cursorColor });
                 }
-                document.getElementById('auth-modal').style.display = 'none';
+                const modal = document.getElementById('auth-modal');
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = "none", 300);
                 resetInactivityTimer();
             } catch (error) { showAuthError(error); }
         });
@@ -511,7 +532,7 @@
             }
         });
 
-        // --- FULL MULTI-PAGE PDF HANDLING ---
+        // --- RETINA (HIGH-DPI) MULTI-PAGE PDF HANDLING ---
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
         let pdfDoc = null;
@@ -542,35 +563,57 @@
                     pdfDoc = pdf;
                     extractedPdfText = ""; 
                     
-                    let totalHeight = 0;
-                    let maxWidth = 0;
+                    let totalHeightLogical = 0;
+                    let maxWidthLogical = 0;
                     const pagesData = [];
+                    const baseScale = 1.5;
+                    const dpr = window.devicePixelRatio || 1;
 
+                    // Calculate Logical Dimensions
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
-                        const viewport = page.getViewport({ scale: 1.5 });
+                        const viewport = page.getViewport({ scale: baseScale });
                         pagesData.push({ page, viewport });
-                        totalHeight += viewport.height;
-                        if (viewport.width > maxWidth) maxWidth = viewport.width;
+                        totalHeightLogical += viewport.height;
+                        if (viewport.width > maxWidthLogical) maxWidthLogical = viewport.width;
                     }
 
-                    pdfCanvas.width = maxWidth;
-                    pdfCanvas.height = totalHeight;
-                    annoCanvas.width = maxWidth;
-                    annoCanvas.height = totalHeight;
+                    // Set CSS Sizes (Logical)
+                    pdfCanvas.style.width = maxWidthLogical + 'px';
+                    pdfCanvas.style.height = totalHeightLogical + 'px';
+                    annoCanvas.style.width = maxWidthLogical + 'px';
+                    annoCanvas.style.height = totalHeightLogical + 'px';
 
-                    let currentY = 0;
+                    // Set Internal High-Res Sizes (Retina)
+                    pdfCanvas.width = maxWidthLogical * dpr;
+                    pdfCanvas.height = totalHeightLogical * dpr;
+                    annoCanvas.width = maxWidthLogical * dpr;
+                    annoCanvas.height = totalHeightLogical * dpr;
+
+                    // Scale contexts so drawing logic remains 1:1 with mouse/pencil
+                    pdfCtx.scale(dpr, dpr);
+                    annoCtx.scale(dpr, dpr);
+
+                    let currentYLogical = 0;
                     for (let i = 0; i < pagesData.length; i++) {
                         const { page, viewport } = pagesData[i];
                         
+                        // Render PDF page sharply at device pixel ratio
+                        const hiResViewport = page.getViewport({ scale: baseScale * dpr });
                         const tempCanvas = document.createElement('canvas');
-                        tempCanvas.width = viewport.width;
-                        tempCanvas.height = viewport.height;
+                        tempCanvas.width = hiResViewport.width;
+                        tempCanvas.height = hiResViewport.height;
                         const tempCtx = tempCanvas.getContext('2d');
 
-                        await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
-                        pdfCtx.drawImage(tempCanvas, 0, currentY);
-                        currentY += viewport.height;
+                        await page.render({ canvasContext: tempCtx, viewport: hiResViewport }).promise;
+                        
+                        // Temporarily remove scale to draw raw pixels, then restore
+                        pdfCtx.save();
+                        pdfCtx.setTransform(1, 0, 0, 1, 0, 0);
+                        pdfCtx.drawImage(tempCanvas, 0, currentYLogical * dpr);
+                        pdfCtx.restore();
+                        
+                        currentYLogical += viewport.height;
 
                         const textContent = await page.getTextContent();
                         extractedPdfText += textContent.items.map(item => item.str).join(" ") + " ";
@@ -579,16 +622,13 @@
                     dropzone.style.display = 'none';
                     canvasWrapper.style.display = 'block';
 
-                    // VERY IMPORTANT: Redraw database strokes onto the newly resized canvas instantly!
-                    if (typeof window.renderAllStrokes === 'function') {
-                        window.renderAllStrokes();
-                    }
+                    if (typeof window.renderAllStrokes === 'function') window.renderAllStrokes();
                 });
             };
             fileReader.readAsArrayBuffer(file);
         }
 
-        // --- Toolbar Logic (Tools, Colors, Thickness) ---
+        // --- Toolbar Logic ---
         const tools = { 'tool-pen': 'pen', 'tool-highlighter': 'highlighter', 'tool-eraser': 'eraser' };
         for (const [id, toolName] of Object.entries(tools)) {
             document.getElementById(id).addEventListener('click', (e) => {
@@ -615,38 +655,57 @@
             currentDrawColor = e.target.value;
         });
 
-        thicknessSlider.addEventListener('input', (e) => {
-            currentThickness = parseInt(e.target.value);
-        });
+        thicknessSlider.addEventListener('input', (e) => { currentThickness = parseInt(e.target.value); });
 
-        // --- Add Scratch Paper Function ---
+        // --- Retina Scratch Paper ---
         document.getElementById('tool-add-page').addEventListener('click', () => {
             if (!pdfDoc && canvasWrapper.style.display === 'none') return;
-            const extraHeight = 1000;
+            const extraLogicalHeight = 1000;
+            const dpr = window.devicePixelRatio || 1;
             
+            const oldLogicalWidth = parseFloat(pdfCanvas.style.width) || 800;
+            const oldLogicalHeight = parseFloat(pdfCanvas.style.height) || 0;
+            const newLogicalHeight = oldLogicalHeight + extraLogicalHeight;
+            
+            // Backup old High-Res Pixels
             const oldPdf = document.createElement('canvas');
-            oldPdf.width = pdfCanvas.width || 800; // fallback width if no pdf loaded
-            oldPdf.height = pdfCanvas.height || 0;
+            oldPdf.width = pdfCanvas.width;
+            oldPdf.height = pdfCanvas.height;
             if(pdfCanvas.height > 0) oldPdf.getContext('2d').drawImage(pdfCanvas, 0, 0);
             
-            const newHeight = (pdfCanvas.height || 0) + extraHeight;
-            const newWidth = pdfCanvas.width || 800;
+            // Update CSS
+            pdfCanvas.style.width = oldLogicalWidth + "px";
+            pdfCanvas.style.height = newLogicalHeight + "px";
+            annoCanvas.style.width = oldLogicalWidth + "px";
+            annoCanvas.style.height = newLogicalHeight + "px";
             
-            pdfCanvas.width = newWidth;
-            pdfCanvas.height = newHeight;
-            annoCanvas.width = newWidth;
-            annoCanvas.height = newHeight;
+            // Update High-Res Canvas
+            pdfCanvas.width = oldLogicalWidth * dpr;
+            pdfCanvas.height = newLogicalHeight * dpr;
+            annoCanvas.width = oldLogicalWidth * dpr;
+            annoCanvas.height = newLogicalHeight * dpr;
             
-            if(oldPdf.height > 0) pdfCtx.drawImage(oldPdf, 0, 0);
+            pdfCtx.scale(dpr, dpr);
+            annoCtx.scale(dpr, dpr);
             
+            // Redraw old PDF pixels
+            if(oldPdf.height > 0) {
+                pdfCtx.save();
+                pdfCtx.setTransform(1, 0, 0, 1, 0, 0);
+                pdfCtx.drawImage(oldPdf, 0, 0);
+                pdfCtx.restore();
+            }
+            
+            // Draw Blank Page
             pdfCtx.fillStyle = "white";
-            pdfCtx.fillRect(0, newHeight - extraHeight, newWidth, extraHeight);
+            pdfCtx.fillRect(0, oldLogicalHeight, oldLogicalWidth, extraLogicalHeight);
             
+            // Draw Divider
             pdfCtx.strokeStyle = "#e5e7eb";
             pdfCtx.lineWidth = 4;
             pdfCtx.beginPath();
-            pdfCtx.moveTo(0, newHeight - extraHeight);
-            pdfCtx.lineTo(newWidth, newHeight - extraHeight);
+            pdfCtx.moveTo(0, oldLogicalHeight);
+            pdfCtx.lineTo(oldLogicalWidth, oldLogicalHeight);
             pdfCtx.stroke();
             
             dropzone.style.display = 'none';
@@ -668,6 +727,7 @@
             confirmBtn.innerText = "Clear Workspace";
             currentConfirmAction = "workspace";
             confirmModal.style.display = 'flex'; 
+            setTimeout(() => confirmModal.classList.add('active'), 10);
         });
 
         document.getElementById('tool-clear-ink').addEventListener('click', () => { 
@@ -676,22 +736,28 @@
             confirmBtn.innerText = "Erase Ink";
             currentConfirmAction = "ink";
             confirmModal.style.display = 'flex'; 
+            setTimeout(() => confirmModal.classList.add('active'), 10);
         });
 
         document.getElementById('btn-cancel-clear').addEventListener('click', () => { 
-            confirmModal.style.display = 'none'; 
+            confirmModal.classList.remove('active');
+            setTimeout(() => confirmModal.style.display = 'none', 300);
             currentConfirmAction = null;
         });
 
         document.getElementById('btn-confirm-clear').addEventListener('click', async () => {
-            confirmModal.style.display = 'none';
+            confirmModal.classList.remove('active');
+            setTimeout(() => confirmModal.style.display = 'none', 300);
             
             if (currentConfirmAction === "workspace") {
                 canvasWrapper.style.display = 'none';
                 dropzone.style.display = 'flex';
                 extractedPdfText = "";
                 fileInput.value = "";
+                pdfCanvas.width = 0;
                 pdfCanvas.height = 0;
+                annoCanvas.width = 0;
+                annoCanvas.height = 0;
             }
             
             try {
@@ -738,7 +804,7 @@
             chatBox.appendChild(thinkingMsg);
 
             if(GEMINI_API_KEY === "PUT_YOUR_NEW_AIZA_KEY_HERE" || !GEMINI_API_KEY || !GEMINI_API_KEY.startsWith("AIza")) {
-                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it MUST start with 'AIza...') into the code at Line 512! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
+                thinkingMsg.innerText = "Error: You need to paste a valid Gemini API key (it MUST start with 'AIza...') into the code at Line 533! Get one by clicking 'Create API key in new project' at aistudio.google.com.";
                 return;
             }
 
@@ -775,6 +841,7 @@
         annoCanvas.addEventListener('pointermove', (e) => {
             if (!currentUser) return;
             const rect = annoCanvas.getBoundingClientRect();
+            // Scale logic is handled natively by the context transform, so raw clientX works!
             const x = e.clientX - rect.left, y = e.clientY - rect.top;
 
             if (isDrawing) { currentStroke.push({ x, y }); renderLocalStroke(); }
@@ -793,10 +860,7 @@
                 const strokeToSave = [...currentStroke];
                 addDoc(strokesRef, {
                     userId: currentUser.id, userName: currentUser.name,
-                    cursorColor: currentUser.color, 
-                    color: currentDrawColor, 
-                    thickness: currentThickness, 
-                    tool: activeTool,
+                    cursorColor: currentUser.color, color: currentDrawColor, thickness: currentThickness, tool: activeTool,
                     points: strokeToSave, timestamp: new Date().toISOString()
                 });
             }
@@ -851,7 +915,13 @@
         }
 
         window.renderAllStrokes = function() {
+            // Need to clear the raw internal canvas pixels using physical dimensions, not logical
+            const dpr = window.devicePixelRatio || 1;
+            annoCtx.save();
+            annoCtx.setTransform(1, 0, 0, 1, 0, 0);
             annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
+            annoCtx.restore();
+            
             contributionLog.forEach((data) => {
                 const points = data.points;
                 if (points && points.length > 0) {
